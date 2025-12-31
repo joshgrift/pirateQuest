@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://cumwy7ox3pa0b"]
+
+[ext_resource type="Script" uid="uid://b4ivpos2qv5rq" path="res://Player.cs" id="1_onrkg"]
+[ext_resource type="PackedScene" uid="uid://xg8l1d4eyeyk" path="res://art/kenny_pirate/ship-small.glb" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://bhydcnypg8r7i" path="res://CameraPivot.cs" id="3_i3pqv"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hqtel"]
+radius = 4.148299
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_onrkg")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="ship-small2" parent="Pivot" instance=ExtResource("2_onrkg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CameraPivot" type="Marker3D" parent="."]
+transform = Transform3D(-0.038387865, 0, 0.9992629, 0, 1, 0, -0.9992629, 0, -0.038387865, 0, 0, 0)
+script = ExtResource("3_i3pqv")
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+transform = Transform3D(0.9908929, 0.080601275, -0.10786432, 0.030467972, 0.6460718, 0.7626684, 0.13116013, -0.75900906, 0.63773215, 0.22972912, 17.137226, 10.122845)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.025403023, 3.877646, -0.19620496)
+shape = SubResource("SphereShape3D_hqtel")
