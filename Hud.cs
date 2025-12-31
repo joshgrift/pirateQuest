@@ -3,12 +3,13 @@ using Algonquin1;
 
 public partial class Hud : CanvasLayer
 {
-	[Export] public VBoxContainer InventoryList;
+	[Export] public Container InventoryList;
+
+	[Export] public Player Player;
 
 	public override void _Ready()
 	{
-		var player = GetNode<Player>("/root/main/Player");
-		player.InventoryChanged += OnInventoryChanged;
+		Player.InventoryChanged += OnInventoryChanged;
 	}
 
 	private void OnInventoryChanged(InventoryItemType itemType, int newAmount)
