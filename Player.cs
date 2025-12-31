@@ -3,36 +3,29 @@ using Godot;
 
 public partial class Player : CharacterBody3D, ICollector
 {
-	// Don't forget to rebuild the project so the editor knows about the new export variable.
-
-	// Maximum speed the ship can reach in meters per second.
 	[Export]
 	public float MaxSpeed { get; set; } = 14.0f;
 
-	// How quickly the ship accelerates (smaller = more realistic/heavier ship)
 	[Export]
 	public float Acceleration { get; set; } = 3.0f;
 
-	// How quickly the ship decelerates when no input (smaller = more drift/momentum)
 	[Export]
 	public float Deceleration { get; set; } = 1.5f;
 
-	// The downward acceleration when in the air, in meters per second squared.
 	[Export]
 	public int FallAcceleration { get; set; } = 75;
 
-	// Base turn rate when moving at max speed (radians per second)
 	[Export]
 	public float TurnSpeed { get; set; } = 1.5f;
 
-	// Minimum speed needed before ship can turn effectively
 	[Export]
 	public float MinTurnSpeed { get; set; } = 2.0f;
 
-	// Current forward speed of the ship (can be negative for reverse)
 	private float _currentSpeed = 0.0f;
 
 	private Vector3 _targetVelocity = Vector3.Zero;
+
+	private readonly Inventory _inventory = new();
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -109,7 +102,8 @@ public partial class Player : CharacterBody3D, ICollector
 
 	public bool Collect(InventoryItemType item, int amount)
 	{
-		GD.Print($"Collected {amount} {item}");
+		_inventory.AddItem(item, amount);
+		GD.Print($"Collected {amount} of {item}. Total now: {_inventory.GetItemCount(item)}");
 		return true;
 	}
 }
