@@ -12,7 +12,7 @@ public partial class Player : CharacterBody3D
   public int FallAcceleration { get; set; } = 75;
   // How fast the player rotates (higher = faster rotation)
   [Export]
-  public float RotationSpeed { get; set; } = 2.0f;
+  public float RotationSpeed { get; set; } = 1.0f;
 
   private Vector3 _targetVelocity = Vector3.Zero;
 
@@ -44,10 +44,11 @@ public partial class Player : CharacterBody3D
     if (direction != Vector3.Zero)
     {
       direction = direction.Normalized();
-      // Smoothly interpolate the rotation using Slesadawrp
+      // Smoothly interpolate the rotation using Slerp
       var pivot = GetNode<Node3D>("Pivot");
-      var targetBasis = Basis.LookingAt(direction);
-      pivot.Basis = pivot.Basis.Slerp(targetBasis, RotationSpeed * (float)delta);
+      var targetBasis = Basis.LookingAt(direction, Vector3.Up).Orthonormalized();
+      var currentBasis = pivot.Basis.Orthonormalized();
+      pivot.Basis = currentBasis.Slerp(targetBasis, RotationSpeed * (float)delta);
     }
 
     // Ground velocity
