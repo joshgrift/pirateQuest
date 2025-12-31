@@ -3,6 +3,9 @@ using Godot;
 
 public partial class Player : CharacterBody3D, ICollector
 {
+	[Signal]
+	public delegate void InventoryChangedEventHandler(InventoryItemType itemType, int newAmount);
+
 	[Export]
 	public float MaxSpeed { get; set; } = 14.0f;
 
@@ -30,6 +33,8 @@ public partial class Player : CharacterBody3D, ICollector
 	public override void _PhysicsProcess(double delta)
 	{
 		var pivot = GetNode<Node3D>("Pivot");
+
+		_inventory.AddItem(InventoryItemType.Wood, 1);
 
 		// Get input for forward/backward movement
 		float forwardInput = 0.0f;
@@ -103,7 +108,7 @@ public partial class Player : CharacterBody3D, ICollector
 	public bool Collect(InventoryItemType item, int amount)
 	{
 		_inventory.AddItem(item, amount);
-		GD.Print($"Collected {amount} of {item}. Total now: {_inventory.GetItemCount(item)}");
+		EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));
 		return true;
 	}
 }

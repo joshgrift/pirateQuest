@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://c8c63pod53w2l"]
+[gd_scene load_steps=9 format=3 uid="uid://c8c63pod53w2l"]
 
+[ext_resource type="Script" uid="uid://cxvxoxqx6wkup" path="res://Hud.cs" id="1_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://0xkhvjlfg55v" path="res://art/proto/Dark/texture_05.png" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://cumwy7ox3pa0b" path="res://player.tscn" id="1_ig7tw"]
+[ext_resource type="Theme" uid="uid://sj508xa6kulh" path="res://hud_theme.tres" id="2_lquwl"]
 [ext_resource type="PackedScene" uid="uid://bkdqs4u6efsoq" path="res://collection_point.tscn" id="3_h2yge"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
@@ -14,7 +16,18 @@ uv1_scale = Vector3(20, 20, 20)
 [sub_resource type="BoxMesh" id="BoxMesh_ig7tw"]
 size = Vector3(200, 1, 299)
 
-[node name="Node3D" type="Node3D"]
+[node name="main" type="Node3D"]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("1_1bvp3")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="InventoryList" type="VBoxContainer" parent="HUD/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("2_lquwl")
 
 [node name="Ground" type="StaticBody3D" parent="."]
 
@@ -34,4 +47,4 @@ transform = Transform3D(1, 0, 0, 0, -0.53452927, 0.84514993, 0, -0.84514993, -0.
 shadow_enabled = true
 
 [node name="World" parent="." instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.98428345, 0, -2.019764)

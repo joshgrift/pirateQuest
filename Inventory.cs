@@ -3,14 +3,21 @@ namespace Algonquin1;
 
 using System.Collections.Generic;
 
-public class Inventory
+public partial class Inventory
 {
   private readonly Dictionary<InventoryItemType, int> _items = [];
 
   public int GetItemCount(InventoryItemType itemType)
   {
-    _items.TryGetValue(itemType, out int count);
-    return count;
+    if (_items.TryGetValue(itemType, out int count))
+    {
+      return count;
+    }
+    else
+    {
+      return 0;
+    }
+
   }
 
   public void AddItem(InventoryItemType itemType, int amount)
@@ -33,6 +40,7 @@ public class Inventory
       _items[itemType] -= amount;
       return true;
     }
+
     return false;
   }
 }
