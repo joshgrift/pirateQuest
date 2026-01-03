@@ -25,7 +25,7 @@ public partial class CollectionPoint : Node3D, IDropper
 	{
 		foreach (var collector in collectors)
 		{
-			collector.ReceiveItem(ResourceType, CollectionPerSecond);
+			collector.UpdateInventory(ResourceType, CollectionPerSecond);
 		}
 	}
 

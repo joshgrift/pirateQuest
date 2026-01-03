@@ -186,9 +186,22 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 		EmitSignal(SignalName.Death, Name);
 	}
 
-	public bool ReceiveItem(InventoryItemType item, int amount)
+	public bool UpdateInventory(InventoryItemType item, int amount)
 	{
+		return UpdateInventory(item, amount, 0);
+	}
+
+	public bool UpdateInventory(InventoryItemType item, int amount, int price = 0)
+	{
+		GD.Print($"{Name} updating inventory: {item} by {amount} (price: {price})");
+
 		_inventory.AddItem(item, amount);
+		if (price != 0)
+		{
+			_inventory.AddItem(InventoryItemType.G, price);
+			EmitSignal(SignalName.InventoryChanged, (int)InventoryItemType.G, _inventory.GetItemCount(InventoryItemType.G));
+		}
+
 		EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));
 		return true;
 	}

@@ -8,6 +8,7 @@ using System;
 public partial class Port : Node3D, IIntractable
 {
 	[Export] public String PortName { get; set; } = "Default Port";
+	[Export] public ShopItemData[] ItemsForSale { get; set; } = [];
 	[Signal] public delegate void ShipDockedEventHandler(Port port, Player player, Variant payload);
 	[Signal] public delegate void ShipDepartedEventHandler(Port port, Player player);
 
@@ -38,6 +39,7 @@ public partial class Port : Node3D, IIntractable
 		return new Dictionary
 		{
 			{ "PortName", PortName },
+			{ "ItemsForSale", ItemsForSale }
 		};
 	}
 }

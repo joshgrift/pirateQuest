@@ -45,11 +45,22 @@ public partial class Hud : CanvasLayer
 		GD.Print($"Player {player.Name} entered port {port.PortName}");
 		if (player.Name == _player.Name)
 		{
+			PortUIContainer.Player = _player;
 			PortUIContainer.Visible = true;
 			var payloadDict = (Dictionary)payload;
 			PortUIContainer.ChangeName((string)payloadDict["PortName"]);
-		}
 
+			// Convert Godot Array to ShopItemData[]
+			var godotArray = payloadDict["ItemsForSale"].AsGodotArray();
+			var shopItems = new ShopItemData[godotArray.Count];
+			for (int i = 0; i < godotArray.Count; i++)
+			{
+				shopItems[i] = (ShopItemData)godotArray[i];
+			}
+
+			GD.Print($"Setting port UI stock with {shopItems.Length} items");
+			PortUIContainer.SetStock(shopItems);
+		}
 	}
 
 	private void OnPlayerDepartedPort(Port port, Player player)

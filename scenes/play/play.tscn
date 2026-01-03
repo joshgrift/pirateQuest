@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c8c63pod53w2l"]
+[gd_scene load_steps=16 format=3 uid="uid://c8c63pod53w2l"]
 
 [ext_resource type="Script" uid="uid://cie1vrfri8q8x" path="res://scenes/play/Play.cs" id="1_j5m8q"]
 [ext_resource type="Script" uid="uid://cxvxoxqx6wkup" path="res://scenes/play/Hud.cs" id="2_y08r1"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bkdqs4u6efsoq" path="res://scenes/collectonPoint/collection_point.tscn" id="6_ccytq"]
 [ext_resource type="PackedScene" uid="uid://cbwteoxdgaayj" path="res://scenes/play/terrain_block.tscn" id="7_damvd"]
 [ext_resource type="PackedScene" uid="uid://bafsgh2fvblr2" path="res://scenes/port/port.tscn" id="9_4dfl3"]
+[ext_resource type="Script" uid="uid://b81r8qngpan6y" path="res://scripts/resources/ShopItemData.cs" id="10_10igl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
 size = Vector3(500, 1, 500)
@@ -19,6 +20,15 @@ uv1_scale = Vector3(20, 20, 20)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ig7tw"]
 size = Vector3(500, 1, 500)
+
+[sub_resource type="Resource" id="Resource_a0nu5"]
+script = ExtResource("10_10igl")
+metadata/_custom_type_script = "uid://b81r8qngpan6y"
+
+[sub_resource type="Resource" id="Resource_bjecb"]
+script = ExtResource("10_10igl")
+ItemType = 1
+metadata/_custom_type_script = "uid://b81r8qngpan6y"
 
 [node name="Play" type="Node3D" node_paths=PackedStringArray("_playerSpawner", "_projectileSpawner", "_freeCam")]
 script = ExtResource("1_j5m8q")
@@ -75,7 +85,7 @@ layout_mode = 2
 theme = ExtResource("3_3ib3j")
 text = "💣  Ready"
 
-[node name="PortUI" type="PanelContainer" parent="HUD"]
+[node name="PortUI" type="PanelContainer" parent="HUD" node_paths=PackedStringArray("StockListContainer")]
 visible = false
 custom_minimum_size = Vector2(400, 0)
 anchors_preset = 11
@@ -86,6 +96,7 @@ offset_left = -172.0
 grow_horizontal = 0
 grow_vertical = 2
 script = ExtResource("4_fe62l")
+StockListContainer = NodePath("MarginContainer/Port/PortTabs/Store")
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/PortUI"]
 layout_mode = 2
@@ -192,6 +203,7 @@ transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, -44.621, 1, 27.669)
 [node name="Port" parent="Interactables" instance=ExtResource("9_4dfl3")]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 47.911507, 1, 38.809845)
 PortName = "Saint Johns"
+ItemsForSale = Array[Object]([SubResource("Resource_a0nu5"), SubResource("Resource_bjecb")])
 
 [node name="Port2" parent="Interactables" instance=ExtResource("9_4dfl3")]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -111.896355, 1, -103.57585)

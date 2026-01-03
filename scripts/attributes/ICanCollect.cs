@@ -5,5 +5,5 @@ namespace Algonquin1.Attributes;
 /// </summary>
 public interface ICanCollect
 {
-  bool ReceiveItem(InventoryItemType item, int amount);
+  bool UpdateInventory(InventoryItemType item, int amount);
 }
