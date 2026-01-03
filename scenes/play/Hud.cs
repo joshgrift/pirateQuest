@@ -4,8 +4,8 @@ using Algonquin1;
 public partial class Hud : CanvasLayer
 {
 	[Export] public Container InventoryList;
-
 	[Export] public CanvasItem ReadyToFireContainer;
+	[Export] public Label HealthLabel;
 
 	private Player _player;
 	private int _retryCount = 0;
@@ -21,7 +21,7 @@ public partial class Hud : CanvasLayer
 	{
 		// Find the player that we control
 		var myPeerId = Multiplayer.GetUniqueId();
-		_player = GetNodeOrNull<Player>($"/root/Play/SpawnPoint/Player{myPeerId}");
+		_player = GetNodeOrNull<Player>($"/root/Play/SpawnPoint/player_{myPeerId}");
 
 		if (_player != null)
 		{
@@ -35,6 +35,11 @@ public partial class Hud : CanvasLayer
 			_player.CannonFired += () =>
 			{
 				ReadyToFireContainer.Visible = false;
+			};
+
+			_player.HealthUpdate += (newHealth) =>
+			{
+				HealthLabel.Text = $"Health: {newHealth}";
 			};
 
 			GD.Print($"HUD connected to Player{myPeerId}");
