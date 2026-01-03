@@ -10,11 +10,11 @@ public partial class Player : CharacterBody3D, ICollector, IDamageable
 	[Signal] public delegate void HealthUpdateEventHandler(int newHealth);
 
 	[Export] public float MaxSpeed { get; set; } = 14.0f;
-	[Export] public float Acceleration { get; set; } = 3.0f;
-	[Export] public float Deceleration { get; set; } = 1.5f;
+	[Export] public float Acceleration { get; set; } = 8.0f;
+	[Export] public float Deceleration { get; set; } = 4.0f;
 	[Export] public int FallAcceleration { get; set; } = 75;
 	[Export] public float TurnSpeed { get; set; } = 0.5f;
-	[Export] public float MinTurnSpeed { get; set; } = 2.0f;
+	[Export] public float MinTurnSpeed { get; set; } = 0.0f;
 
 	[Export] public int Health { get; set; } = 100;
 	[Export] public int MaxHealth { get; set; } = 100;
@@ -136,19 +136,11 @@ public partial class Player : CharacterBody3D, ICollector, IDamageable
 			_currentSpeed = Mathf.MoveToward(_currentSpeed, 0.0f, Deceleration * (float)delta);
 		}
 
-		// Only allow turning when moving (ships need water flow over rudder to turn)
-		if (Mathf.Abs(_currentSpeed) > MinTurnSpeed && turnInput != 0.0f)
+		// Allow turning with responsive controls (no speed requirement)
+		if (turnInput != 0.0f)
 		{
-			// Turn rate increases with speed (faster ships turn better)
-			// Also, turning is reversed when going backwards (like a real ship)
-			float speedFactor = Mathf.Abs(_currentSpeed) / MaxSpeed;
-			float effectiveTurnSpeed = TurnSpeed * speedFactor;
-
-			// When reversing, turning is inverted (like steering a car in reverse)
-			float turnDirection = _currentSpeed > 0 ? turnInput : -turnInput;
-
-			// Rotate the pivot (and thus the ship model)
-			RotateY(-turnDirection * effectiveTurnSpeed * (float)delta);
+			// Rotate the ship - simple and responsive
+			RotateY(-turnInput * TurnSpeed * (float)delta);
 		}
 
 		// Move the ship in the direction it's facing
