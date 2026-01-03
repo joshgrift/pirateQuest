@@ -1,12 +1,14 @@
-[gd_scene load_steps=11 format=3 uid="uid://c8c63pod53w2l"]
+[gd_scene load_steps=13 format=3 uid="uid://c8c63pod53w2l"]
 
 [ext_resource type="Script" uid="uid://cie1vrfri8q8x" path="res://scenes/play/Play.cs" id="1_j5m8q"]
 [ext_resource type="Script" uid="uid://cxvxoxqx6wkup" path="res://scenes/play/Hud.cs" id="2_y08r1"]
 [ext_resource type="Theme" uid="uid://sj508xa6kulh" path="res://scenes/play/hud_theme.tres" id="3_3ib3j"]
+[ext_resource type="Script" uid="uid://bok25e88xetyj" path="res://scenes/play/PortUi.cs" id="4_fe62l"]
 [ext_resource type="Texture2D" uid="uid://0xkhvjlfg55v" path="res://art/proto/Dark/texture_05.png" id="4_iu7w4"]
 [ext_resource type="Script" uid="uid://d3pli0crpwxcc" path="res://scripts/FreeCam.cs" id="6_1phcp"]
 [ext_resource type="PackedScene" uid="uid://bkdqs4u6efsoq" path="res://scenes/collectonPoint/collection_point.tscn" id="6_ccytq"]
 [ext_resource type="PackedScene" uid="uid://cbwteoxdgaayj" path="res://scenes/play/terrain_block.tscn" id="7_damvd"]
+[ext_resource type="PackedScene" uid="uid://bafsgh2fvblr2" path="res://scenes/port/port.tscn" id="9_4dfl3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
 size = Vector3(500, 1, 500)
@@ -24,10 +26,11 @@ _playerSpawner = NodePath("SpawnPoint/MultiplayerSpawner")
 _projectileSpawner = NodePath("Projectiles/ProjectileSpawner")
 _freeCam = NodePath("ServerFreeCam")
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("InventoryList", "ReadyToFireContainer", "HealthLabel", "PlayersContainer")]
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("InventoryList", "ReadyToFireContainer", "PortUIContainer", "HealthLabel", "PlayersContainer")]
 script = ExtResource("2_y08r1")
 InventoryList = NodePath("MarginContainer/InventoryList")
 ReadyToFireContainer = NodePath("MarginContainer2/HBoxContainer/ReadyToFire")
+PortUIContainer = NodePath("PortUI")
 HealthLabel = NodePath("MarginContainer2/HBoxContainer/HealthLabel")
 PlayersContainer = NodePath("../SpawnPoint")
 
@@ -72,6 +75,52 @@ layout_mode = 2
 theme = ExtResource("3_3ib3j")
 text = "💣  Ready"
 
+[node name="PortUI" type="PanelContainer" parent="HUD"]
+visible = false
+custom_minimum_size = Vector2(400, 0)
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -172.0
+grow_horizontal = 0
+grow_vertical = 2
+script = ExtResource("4_fe62l")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD/PortUI"]
+layout_mode = 2
+theme = ExtResource("3_3ib3j")
+
+[node name="Port" type="VBoxContainer" parent="HUD/PortUI/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("3_3ib3j")
+
+[node name="PortName" type="Label" parent="HUD/PortUI/MarginContainer/Port"]
+layout_mode = 2
+text = "Saint Johns"
+
+[node name="PortTabs" type="TabContainer" parent="HUD/PortUI/MarginContainer/Port"]
+layout_mode = 2
+theme = ExtResource("3_3ib3j")
+current_tab = 0
+
+[node name="Store" type="VBoxContainer" parent="HUD/PortUI/MarginContainer/Port/PortTabs"]
+layout_mode = 2
+theme = ExtResource("3_3ib3j")
+metadata/_tab_index = 0
+
+[node name="Button" type="Button" parent="HUD/PortUI/MarginContainer/Port/PortTabs/Store"]
+layout_mode = 2
+text = "Buy Thing"
+
+[node name="Recruit" type="VBoxContainer" parent="HUD/PortUI/MarginContainer/Port/PortTabs"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Hire" type="Button" parent="HUD/PortUI/MarginContainer/Port/PortTabs/Recruit"]
+layout_mode = 2
+
 [node name="Ground" type="StaticBody3D" parent="."]
 collision_layer = 4
 collision_mask = 0
@@ -80,19 +129,13 @@ collision_mask = 0
 shape = SubResource("BoxShape3D_0xm2m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0554657, 0.09586334, -0.055252075)
 material_override = SubResource("StandardMaterial3D_1bvp3")
 mesh = SubResource("BoxMesh_ig7tw")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.53452927, 0.84514993, 0, -0.84514993, -0.53452927, 0, 9.451715, 0)
 shadow_enabled = true
-
-[node name="CollectionPoint" parent="." instance=ExtResource("6_ccytq")]
-transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, -44.621, 1, 27.669)
-
-[node name="Collection Point" parent="." instance=ExtResource("6_ccytq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.984, 1, -40.067)
-ResourceType = 1
 
 [node name="SpawnPoint" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.776485, 0)
@@ -136,3 +179,20 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 14.433952, 5, 38.41247)
 
 [node name="TerrainBlock4" parent="Terrain" instance=ExtResource("7_damvd")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 46.48507, 5, -20.913643)
+
+[node name="Interactables" type="Node3D" parent="."]
+
+[node name="Collection Point" parent="Interactables" instance=ExtResource("6_ccytq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.984, 1, -40.067)
+ResourceType = 1
+
+[node name="CollectionPoint" parent="Interactables" instance=ExtResource("6_ccytq")]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, -44.621, 1, 27.669)
+
+[node name="Port" parent="Interactables" instance=ExtResource("9_4dfl3")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 47.911507, 1, 38.809845)
+PortName = "Saint Johns"
+
+[node name="Port2" parent="Interactables" instance=ExtResource("9_4dfl3")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -111.896355, 1, -103.57585)
+PortName = "Haven"

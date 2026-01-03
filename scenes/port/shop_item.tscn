@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://buq6tcwo38bst"]
+
+[ext_resource type="Script" uid="uid://5hnw8j31cjmi" path="res://scenes/port/ShopItem.cs" id="1_uvwhf"]
+
+[node name="ShopItem" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_uvwhf")
+
+[node name="Item" type="Label" parent="."]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Stone"
+horizontal_alignment = 1
+
+[node name="Sell" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Sell [+4g]"
+
+[node name="Buy" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Buy [-4g]"

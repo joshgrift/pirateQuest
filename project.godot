@@ -24,6 +24,10 @@ Configuration="*res://scripts/Configuration.cs"
 
 project/assembly_name="Algonquin 1"
 
+[global_group]
+
+ports=""
+
 [input]
 
 ui_cancel={

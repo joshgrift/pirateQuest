@@ -1,7 +1,8 @@
 using Algonquin1;
+using Algonquin1.Attributes;
 using Godot;
 
-public partial class Player : CharacterBody3D, ICollector, IDamageable
+public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 {
 	[Signal] public delegate void InventoryChangedEventHandler(InventoryItemType itemType, int newAmount);
 	[Signal] public delegate void CannonFiredEventHandler();
@@ -185,7 +186,7 @@ public partial class Player : CharacterBody3D, ICollector, IDamageable
 		EmitSignal(SignalName.Death, Name);
 	}
 
-	public bool Collect(InventoryItemType item, int amount)
+	public bool ReceiveItem(InventoryItemType item, int amount)
 	{
 		_inventory.AddItem(item, amount);
 		EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));

@@ -1,5 +1,7 @@
 namespace Algonquin1.Partials;
 
+using Algonquin1.Attributes;
+
 using Godot;
 
 /// <summary>

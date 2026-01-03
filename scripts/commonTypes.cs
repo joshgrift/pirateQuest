@@ -4,4 +4,6 @@ public enum InventoryItemType
 {
   Wood,
   Stone,
+  G,
+  Ammo
 }

@@ -1,10 +1,14 @@
 using Godot;
 using Algonquin1;
+using System.Linq;
+using System;
+using Godot.Collections;
 
 public partial class Hud : CanvasLayer
 {
 	[Export] public Container InventoryList;
 	[Export] public CanvasItem ReadyToFireContainer;
+	[Export] public PortUi PortUIContainer;
 	[Export] public Label HealthLabel;
 	[Export] public Node3D PlayersContainer;
 
@@ -14,6 +18,7 @@ public partial class Hud : CanvasLayer
 
 	public override void _Ready()
 	{
+		PortUIContainer.Visible = false;
 		if (Multiplayer.IsServer())
 		{
 			GD.Print("Skipping HUD, acting as server");
@@ -21,7 +26,38 @@ public partial class Hud : CanvasLayer
 			return;
 		}
 
+		var ports = GetTree().GetNodesInGroup("ports");
+
+		GD.Print($"HUD found {ports.Count} ports in the scene");
+
+		foreach (Port port in ports.Cast<Port>())
+		{
+			GD.Print($"HUD subscribing to port {port.PortName} events");
+			port.ShipDocked += OnPlayerEnteredPort;
+			port.ShipDeparted += OnPlayerDepartedPort;
+		}
+
 		FindLocalPlayer();
+	}
+
+	private void OnPlayerEnteredPort(Port port, Player player, Variant payload)
+	{
+		GD.Print($"Player {player.Name} entered port {port.PortName}");
+		if (player.Name == _player.Name)
+		{
+			PortUIContainer.Visible = true;
+			var payloadDict = (Dictionary)payload;
+			PortUIContainer.ChangeName((string)payloadDict["PortName"]);
+		}
+
+	}
+
+	private void OnPlayerDepartedPort(Port port, Player player)
+	{
+		if (player.Name == _player.Name)
+		{
+			PortUIContainer.Visible = false;
+		}
 	}
 
 	private void FindLocalPlayer()

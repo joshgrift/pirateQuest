@@ -1,7 +1,8 @@
-using Godot;
+namespace Algonquin1.Attributes;
 
-namespace Algonquin1;
-
+/// <summary>
+/// Interface for objects that can take damage.
+/// </summary>
 public interface IDamageable
 {
   int Health { get; set; }

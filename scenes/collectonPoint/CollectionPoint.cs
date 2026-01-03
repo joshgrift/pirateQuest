@@ -1,11 +1,12 @@
 using Godot;
 using Algonquin1;
+using Algonquin1.Attributes;
 using System;
 using System.Collections.Generic;
 
-public partial class CollectionPoint : Node3D
+public partial class CollectionPoint : Node3D, IDropper
 {
-	private readonly List<ICollector> collectors = [];
+	private readonly List<ICanCollect> collectors = [];
 
 	[Export] public InventoryItemType ResourceType = InventoryItemType.Wood;
 	[Export] public int CollectionPerSecond = 1;
@@ -24,20 +25,20 @@ public partial class CollectionPoint : Node3D
 	{
 		foreach (var collector in collectors)
 		{
-			collector.Collect(ResourceType, CollectionPerSecond);
+			collector.ReceiveItem(ResourceType, CollectionPerSecond);
 		}
 	}
 
 	private void OnBodyEntered(Node3D body)
 	{
-		if (body is ICollector collector)
+		if (body is ICanCollect collector)
 		{
 			collectors.Add(collector);
 		}
 	}
 	private void OnBodyExited(Node3D body)
 	{
-		if (body is ICollector collector)
+		if (body is ICanCollect collector)
 		{
 			collectors.Remove(collector);
 		}
