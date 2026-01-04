@@ -16,9 +16,15 @@ partial class Configuration : Node
     DisplayServer.WindowSetTitle(title);
   }
 
+  public static string GetVersion()
+  {
+    return ProjectSettings.GetSetting("application/config/version").AsString();
+  }
+
   public static bool IsDesignatedServerMode()
   {
     var args = OS.GetCmdlineArgs();
-    return args.Contains("--server");
+
+    return args.Contains("--server") || OS.HasFeature("dedicated_server");
   }
 }

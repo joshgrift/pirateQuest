@@ -13,6 +13,12 @@ To run without the editor:
 
 Please submit a PR, learning godot, so any and all suggestions welcome.
 
+## Releasing
+- Update Version in Project Settings
+- Run `./build.sh`
+- Add new Git Release in github
+- Upload builds in dist to github release
+
 ## Third Party
 - [GoDot](https://godotengine.org/)
 - Kenney.nl
@@ -24,17 +30,24 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
 - [x] Multiplayer
 - [ ] Core Game Mechanics
   - [x] Collection of resources
-  - [ ] Three resource types & store to purchase upgrades
+  - [x] Three resource types & store
   - [x] Shooting Cannonballs, health, and death.
-  - [ ] Limited Map with islands
+  - [x] Limited Map with islands
+  - [ ] Upgrades
 - [ ] API for AI characters
-  - [ ] Different ship design for AI character
+  - [ ] Different ship design for AI character?
 - [ ] Graphics
   - [ ] Water
-  - [ ] Opaque collection spaces
+  - [x] Opaque collection spaces
   - [ ] Hit Markers
-  - [ ] Collection spots have island
+  - [x] Collection spots have island
 - [ ] Distribution
 
 ## Change log
-hahaha. So early my friends, so early.
+## 0.1.0
+First Release!
+- Ship Movement and resource collection
+- Cannons, death and collisions
+- Ports with buying and selling
+- Hacky Terrain
+- Collection Points

@@ -37,6 +37,12 @@ public partial class Menu : Node2D
 			// THEN change scene
 			GetTree().ChangeSceneToFile("res://scenes/play/play.tscn");
 		};
+
+		var versionLabel = GetNodeOrNull<Label>("CanvasLayer/VersionLabel");
+		if (versionLabel != null)
+		{
+			versionLabel.Text = Configuration.GetVersion();
+		}
 	}
 
 	private void StartServer()
