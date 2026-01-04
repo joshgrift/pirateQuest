@@ -168,6 +168,8 @@ mesh = SubResource("BoxMesh_ig7tw")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.5345293, 0.84515, 0, -0.84515, -0.5345293, 1695, 358.63406, 0)
+light_color = Color(0.8666667, 0.8509804, 0.7411765, 1)
+light_energy = 2.0
 shadow_enabled = true
 
 [node name="SpawnPoint" type="Node3D" parent="."]
