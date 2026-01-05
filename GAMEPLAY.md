@@ -40,6 +40,7 @@ Gather value via:
 - Keep players inside the ecosystem—no offline optimization, no sandbox-breaking.
 - Encourage experimentation, adaptation, and emergent strategies.
 - Make the game engaging enough that players want to participate in the AI experiment itself.
+- Make it beautiful and addicting, it should _feel good_ to shoot a cannon. 
 
 ### Summary
 A one-hour pirate sandbox where economy, exploration, and combat collide—designed to test how humans and AIs compete, cooperate, and outplay each other in a living system.
