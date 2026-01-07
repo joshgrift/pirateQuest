@@ -1,4 +1,4 @@
-using Algonquin1;
+using PiratesQuest;
 using Godot;
 using System;
 

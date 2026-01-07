@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Algonquin1.Attributes;
+namespace PiratesQuest.Attributes;
 
 /// <summary>
 /// Interface for objects that can be interacted with

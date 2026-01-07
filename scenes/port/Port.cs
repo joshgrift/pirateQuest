@@ -1,6 +1,6 @@
-namespace Algonquin1;
+namespace PiratesQuest;
 
-using Algonquin1.Attributes;
+using PiratesQuest.Attributes;
 using Godot;
 using Godot.Collections;
 using System;

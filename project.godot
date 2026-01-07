@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Algonquin"
+config/name="PiratesQuest"
 config/version="0.1.0"
 run/main_scene="uid://dep3rmcejo3ua"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
@@ -31,7 +31,7 @@ Configuration="*res://scripts/Configuration.cs"
 
 [dotnet]
 
-project/assembly_name="Algonquin 1"
+project/assembly_name="PiratesQuest"
 
 [global_group]
 

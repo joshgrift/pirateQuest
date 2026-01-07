@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Algonquin1.Partials;
+using PiratesQuest.Partials;
 
 public partial class CannonBall : ProjectilePartial
 {

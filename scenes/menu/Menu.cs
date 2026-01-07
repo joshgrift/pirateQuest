@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Algonquin1;
+using PiratesQuest;
 
 public partial class Menu : Node2D
 {

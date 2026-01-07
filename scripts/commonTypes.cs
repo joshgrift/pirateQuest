@@ -1,4 +1,4 @@
-namespace Algonquin1;
+namespace PiratesQuest;
 
 public enum InventoryItemType
 {

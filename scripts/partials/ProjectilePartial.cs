@@ -1,6 +1,6 @@
-namespace Algonquin1.Partials;
+namespace PiratesQuest.Partials;
 
-using Algonquin1.Attributes;
+using PiratesQuest.Attributes;
 
 using Godot;
 

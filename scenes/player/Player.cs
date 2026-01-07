@@ -1,5 +1,5 @@
-using Algonquin1;
-using Algonquin1.Attributes;
+using PiratesQuest;
+using PiratesQuest.Attributes;
 using Godot;
 using Godot.Collections;
 

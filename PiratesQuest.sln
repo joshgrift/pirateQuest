@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algonquin 1", "Algonquin 1.csproj", "{89600336-7E50-4D0E-A10F-D1DE530E62EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiratesQuest", "PiratesQuest.csproj", "{89600336-7E50-4D0E-A10F-D1DE530E62EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

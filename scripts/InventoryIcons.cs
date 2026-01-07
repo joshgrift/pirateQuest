@@ -1,4 +1,4 @@
-namespace Algonquin1;
+namespace PiratesQuest;
 
 using Godot;
 using Godot.Collections;

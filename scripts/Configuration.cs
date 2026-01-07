@@ -11,7 +11,7 @@ partial class Configuration : Node
 
   private void ConfigureWindowTitle()
   {
-    String title = $"Algonquin 1 {OS.GetCmdlineArgs().Join(" ")}";
+    String title = $"PiratesQuest {OS.GetCmdlineArgs().Join(" ")}";
     GD.Print($"setting title to {title}");
     DisplayServer.WindowSetTitle(title);
   }

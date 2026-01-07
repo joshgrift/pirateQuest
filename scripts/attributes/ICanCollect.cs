@@ -1,4 +1,4 @@
-namespace Algonquin1.Attributes;
+namespace PiratesQuest.Attributes;
 
 /// <summary>
 /// Interface for objects that can collect items from a Dropper.

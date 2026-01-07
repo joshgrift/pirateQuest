@@ -1,7 +1,7 @@
 
 using Godot.Collections;
 
-namespace Algonquin1;
+namespace PiratesQuest;
 
 public partial class Inventory
 {
