@@ -35,6 +35,7 @@ public partial class CameraPivot : Marker3D
 	private float _currentZoom = 20.0f; // Current zoom distance from pivot
 	private Camera3D _camera; // Reference to the camera child node
 	private Vector3 _initialCameraPosition; // Store the camera's initial position from the scene
+	private Control _portUI; // Reference to the Port UI to check if mouse is over it
 
 	public override void _Ready()
 	{
@@ -49,10 +50,31 @@ public partial class CameraPivot : Marker3D
 
 		// Initialize zoom to default value
 		_currentZoom = DefaultZoom;
+
+		// Get reference to PortUI from the HUD
+		// Navigate up to Player, then to HUD, then to PortUI
+		CallDeferred(MethodName.FindPortUI);
 	}
 
-	public override void _Input(InputEvent @event)
+	private void FindPortUI()
 	{
+		// Try to find the PortUI control in the scene tree
+		var hud = GetTree().Root.FindChild("HUD", true, false);
+		if (hud != null)
+		{
+			_portUI = hud.FindChild("PortUI", true, false) as Control;
+		}
+	}
+
+	// Using _UnhandledInput instead of _Input so UI can consume input events first
+	// This prevents camera from zooming when scrolling over UI elements
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		// If mouse is over the PortUI, don't handle camera controls
+		if (_portUI != null && _portUI.Visible && _portUI.GetGlobalRect().HasPoint(_portUI.GetGlobalMousePosition()))
+		{
+			return;
+		}
 		// Start dragging when left mouse button is pressed
 		if (@event is InputEventMouseButton mouseButton)
 		{
