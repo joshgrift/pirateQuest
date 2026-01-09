@@ -1,7 +1,6 @@
 using Godot;
-using PiratesQuest;
+using PiratesQuest.Data;
 using PiratesQuest.Attributes;
-using System;
 using System.Collections.Generic;
 
 public partial class CollectionPoint : Node3D, IDropper

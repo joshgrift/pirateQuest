@@ -1,7 +1,15 @@
-using PiratesQuest;
+namespace PiratesQuest;
+
 using PiratesQuest.Attributes;
 using Godot;
 using Godot.Collections;
+using PiratesQuest.Data;
+
+public class OwnedComponent
+{
+	public Component Component;
+	public bool isEquipped;
+}
 
 public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 {
@@ -11,15 +19,12 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 	[Signal] public delegate void DeathEventHandler(string playerName);
 	[Signal] public delegate void HealthUpdateEventHandler(int newHealth);
 
-	[Export] public float MaxSpeed { get; set; } = 14.0f;
-	[Export] public float Acceleration { get; set; } = 8.0f;
-	[Export] public float Deceleration { get; set; } = 4.0f;
-	[Export] public int FallAcceleration { get; set; } = 75;
-	[Export] public float TurnSpeed { get; set; } = 0.5f;
-	[Export] public float MinTurnSpeed { get; set; } = 0.0f;
+	public readonly PlayerStats Stats = new();
+	public System.Collections.Generic.List<OwnedComponent> OwnedComponents = [];
 
-	[Export] public int Health { get; set; } = 100;
-	[Export] public int MaxHealth { get; set; } = 100;
+	public int FallAcceleration { get; set; } = 75;
+	public int Health { get; set; } = 100;
+	public int MaxHealth => (int)Stats.GetStat(PlayerStat.ShipHullStrength);
 
 	[Export] public Node3D CannonPivot;
 	[Export] public MultiplayerSpawner ProjectileSpawner;
@@ -30,8 +35,6 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 	private int _fireCoolDownInSeconds = 2;
 	private double _firedTimerCountdown = 0;
 
-	private bool RandomStart = false;
-
 	public override void _Ready()
 	{
 		// Only enable the camera for the player we control
@@ -41,26 +44,23 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 			camera.Current = IsMultiplayerAuthority();
 			GD.Print($"{Name}: Camera enabled = {camera.Current}");
 		}
-		if (RandomStart)
-		{
-			const int startYRange = 100;
-			const int startXRange = 100;
 
-			// Randomize starting position	
-			var rng = new RandomNumberGenerator();
-			rng.Randomize();
-			GlobalPosition = new Vector3(
-				rng.Randf() * startYRange - startYRange / 2,
-				GlobalPosition.Y,
-				rng.Randf() * startXRange - startXRange / 2
-			);
-
-		}
-
-
+		if (Configuration.RandomSpawnEnabled)
+			RandomSpawn(100, 100);
 
 		CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.CannonBall, 10);
-		CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.Coin, 10000);
+		CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.Coin, Configuration.StartingCoin);
+	}
+
+	private void RandomSpawn(int startXRange, int startYRange)
+	{
+		var rng = new RandomNumberGenerator();
+		rng.Randomize();
+		GlobalPosition = new Vector3(
+			rng.Randf() * startYRange - startYRange / 2,
+			GlobalPosition.Y,
+			rng.Randf() * startXRange - startXRange / 2
+		);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -148,20 +148,20 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 		if (forwardInput != 0.0f)
 		{
 			// Accelerate in the direction of input
-			float targetSpeed = forwardInput * MaxSpeed;
-			_currentSpeed = Mathf.MoveToward(_currentSpeed, targetSpeed, Acceleration * (float)delta);
+			float targetSpeed = forwardInput * Stats.GetStat(PlayerStat.ShipMaxSpeed);
+			_currentSpeed = Mathf.MoveToward(_currentSpeed, targetSpeed, Stats.GetStat(PlayerStat.ShipAcceleration) * (float)delta);
 		}
 		else
 		{
 			// Decelerate when no input (ship drifts to a stop)
-			_currentSpeed = Mathf.MoveToward(_currentSpeed, 0.0f, Deceleration * (float)delta);
+			_currentSpeed = Mathf.MoveToward(_currentSpeed, 0.0f, Stats.GetStat(PlayerStat.ShipDeceleration) * (float)delta);
 		}
 
 		// Allow turning with responsive controls (no speed requirement)
 		if (turnInput != 0.0f)
 		{
 			// Rotate the ship - simple and responsive
-			RotateY(-turnInput * TurnSpeed * (float)delta);
+			RotateY(-turnInput * Stats.GetStat(PlayerStat.ShipTurnSpeed) * (float)delta);
 		}
 
 		// Move the ship in the direction it's facing
@@ -204,6 +204,76 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 	{
 		GD.Print($"dead: {Name}");
 		EmitSignal(SignalName.Death, Name);
+	}
+
+	public void PurchaseComponent(Component Component)
+	{
+		if (!MakePurchase(Component.cost))
+			return;
+
+		OwnedComponents.Add(new OwnedComponent
+		{
+			Component = Component,
+			isEquipped = false
+		});
+
+		UpdatePlayerStats();
+	}
+
+	public void ToggleComponentEquipped(Component Component)
+	{
+		for (int i = 0; i < OwnedComponents.Count; i++)
+		{
+			if (OwnedComponents[i].Component == Component)
+			{
+				OwnedComponents[i].isEquipped = !OwnedComponents[i].isEquipped;
+				GD.Print($"{Name} toggled component {Component.name} to {(OwnedComponents[i].isEquipped ? "equipped" : "unequipped")}");
+				UpdatePlayerStats();
+				break;
+			}
+		}
+	}
+
+	public void UpdatePlayerStats()
+	{
+		Stats.ResetStats();
+
+		foreach (var ownedComponent in OwnedComponents)
+		{
+			if (ownedComponent.isEquipped)
+			{
+				foreach (var statChange in ownedComponent.Component.statChanges)
+				{
+					Stats.ApplyStatChange(statChange);
+				}
+			}
+		}
+	}
+
+	public bool CanMakePurchase(Dictionary<InventoryItemType, int> cost)
+	{
+		foreach (var item in cost)
+		{
+			if (_inventory.GetItemCount(item.Key) < item.Value)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public bool MakePurchase(Dictionary<InventoryItemType, int> cost)
+	{
+		if (!CanMakePurchase(cost))
+		{
+			return false;
+		}
+
+		foreach (var item in cost)
+		{
+			UpdateInventory(item.Key, -item.Value);
+		}
+		return true;
 	}
 
 	public bool UpdateInventory(InventoryItemType item, int amount)

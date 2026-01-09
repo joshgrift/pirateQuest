@@ -33,7 +33,7 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
   - [x] Three resource types & store
   - [x] Shooting Cannonballs, health, and death.
   - [x] Limited Map with islands
-  - [ ] Upgrades
+  - [ ] Components
 - [ ] API for AI characters
   - [ ] Different ship design for AI character?
 - [ ] Graphics

@@ -1,7 +1,7 @@
+namespace PiratesQuest;
 
 using Godot.Collections;
-
-namespace PiratesQuest;
+using PiratesQuest.Data;
 
 public partial class Inventory
 {
@@ -17,7 +17,6 @@ public partial class Inventory
     {
       return 0;
     }
-
   }
 
   public void AddItem(InventoryItemType itemType, int amount)

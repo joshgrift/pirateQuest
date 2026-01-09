@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b78oloymbdfnp"
-path="res://.godot/imported/damage.png-08160d4c50ff321e3b2e2d0e93af6ac7.ctex"
+uid="uid://de80lnyim1ufw"
+path="res://.godot/imported/hull.png-81d372993ee72bc41de4d4c46c0cd3bc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/upgrades/damage.png"
-dest_files=["res://.godot/imported/damage.png-08160d4c50ff321e3b2e2d0e93af6ac7.ctex"]
+source_file="res://art/components/hull.png"
+dest_files=["res://.godot/imported/hull.png-81d372993ee72bc41de4d4c46c0cd3bc.ctex"]
 
 [params]
 

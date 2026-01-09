@@ -1,4 +1,4 @@
-namespace PiratesQuest;
+namespace PiratesQuest.Data;
 
 public enum InventoryItemType
 {

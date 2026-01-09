@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3s4idlld5t27"
-path="res://.godot/imported/range.png-d7a3599e2c925ad8d6745c5e9fc7e2cf.ctex"
+uid="uid://gkqtk764udit"
+path="res://.godot/imported/cargo.png-f4e3b9aa0d041de35cd1a60285df5885.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/upgrades/range.png"
-dest_files=["res://.godot/imported/range.png-d7a3599e2c925ad8d6745c5e9fc7e2cf.ctex"]
+source_file="res://art/components/cargo.png"
+dest_files=["res://.godot/imported/cargo.png-f4e3b9aa0d041de35cd1a60285df5885.ctex"]
 
 [params]
 

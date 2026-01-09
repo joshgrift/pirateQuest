@@ -1,5 +1,6 @@
 namespace PiratesQuest;
 
+using PiratesQuest.Data;
 using PiratesQuest.Attributes;
 using Godot;
 using Godot.Collections;

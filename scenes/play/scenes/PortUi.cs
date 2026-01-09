@@ -1,7 +1,8 @@
 using PiratesQuest;
 using Godot;
 using System;
-using Godot.Collections;
+using PiratesQuest.Data;
+using System.Linq;
 
 public partial class PortUi : PanelContainer
 {
@@ -13,14 +14,24 @@ public partial class PortUi : PanelContainer
 	[Export] public Label TotalSellLabel;
 	[Export] public Button SellButton;
 
-	private TreeItem _buyListRoot;
+	[Export] public Tree ShipStatsTree;
 
+	[Export] public Control BuyComponentsContainer;
+	[Export] public Control ShipComponentsContainer;
+	[Export] public Control ActiveShipComponentsContainer;
+
+	private TreeItem _buyListRoot;
 	private TreeItem _sellListRoot;
+
+	private TreeItem _shipStatsRoot;
 
 	public Player Player;
 
+	private PackedScene _componentScene = GD.Load<PackedScene>("res://scenes/play/scenes/hud_ship_component.tscn");
+
 	public override void _Ready()
 	{
+		// Buy
 		BuyListTree.Columns = 4;
 		BuyListTree.HideRoot = true;
 		BuyListTree.ColumnTitlesVisible = true;
@@ -33,6 +44,7 @@ public partial class PortUi : PanelContainer
 		BuyListTree.ItemEdited += OnBuyItemEdited;
 		BuyButton.Pressed += OnBuyButtonPressed;
 
+		// Sell
 		SellListTree.Columns = 4;
 		SellListTree.HideRoot = true;
 		SellListTree.ColumnTitlesVisible = true;
@@ -44,6 +56,11 @@ public partial class PortUi : PanelContainer
 
 		SellListTree.ItemEdited += OnSellItemEdited;
 		SellButton.Pressed += OnSellButtonPressed;
+
+		// ShipMenu
+		ShipStatsTree.Columns = 4;
+		ShipStatsTree.HideRoot = true;
+		_shipStatsRoot = ShipStatsTree.CreateItem();
 	}
 
 	public void ChangeName(string name)
@@ -157,5 +174,59 @@ public partial class PortUi : PanelContainer
 		}
 
 		TotalSellLabel.Text = $"Total: 0";
+	}
+
+	public void UpdateShipMenu()
+	{
+		// Components
+		LoadComponents(BuyComponentsContainer, [..
+		GameData.Components.Where(c => !Player.OwnedComponents.Any(oc => oc.Component == c))
+		]);
+
+
+
+		LoadComponents(ActiveShipComponentsContainer, [
+			.. Player.OwnedComponents.Where(oc => oc.isEquipped).Select(oc => oc.Component)
+			], true);
+		LoadComponents(ShipComponentsContainer, [
+			.. Player.OwnedComponents.Where(oc => !oc.isEquipped).Select(oc => oc.Component)
+			], true);
+
+		// Stats
+		_shipStatsRoot.CallRecursive("free");
+		_shipStatsRoot = ShipStatsTree.CreateItem();
+		foreach (var stat in Player.Stats.GetAllStats())
+		{
+			TreeItem item = ShipStatsTree.CreateItem(_shipStatsRoot);
+			item.SetText(0, stat.Key.ToString());
+			item.SetText(1, stat.Value.ToString());
+		}
+
+		ShipStatsTree.CustomMinimumSize = new Vector2(0, Player.Stats.GetAllStats().Count * 36);
+	}
+
+	private void LoadComponents(Control control, Component[] components, bool isOwned = false)
+	{
+		foreach (Node child in control.GetChildren())
+		{
+			child.QueueFree();
+		}
+
+		foreach (var component in components)
+		{
+			var componentUi = _componentScene.Instantiate<HudShipComponent>();
+			componentUi.SetComponent(component, isOwned);
+			componentUi.BuyButtonClicked += () =>
+			{
+				Player.PurchaseComponent(component);
+				UpdateShipMenu();
+			};
+			componentUi.EquipButtonClicked += () =>
+			{
+				Player.ToggleComponentEquipped(component);
+				UpdateShipMenu();
+			};
+			control.AddChild(componentUi);
+		}
 	}
 }

@@ -3,6 +3,8 @@ namespace PiratesQuest;
 using Godot;
 using Godot.Collections;
 
+using PiratesQuest.Data;
+
 public class Icons
 {
   private static bool loadedIcons = false;

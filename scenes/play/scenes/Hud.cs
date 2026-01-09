@@ -1,10 +1,10 @@
 using Godot;
 using PiratesQuest;
 using System.Linq;
-using System;
+using PiratesQuest.Data;
 using Godot.Collections;
 
-public partial class Hud : CanvasLayer
+public partial class Hud : Control
 {
 	[Export] public Tree InventoryList;
 	[Export] public CanvasItem ReadyToFireContainer;
@@ -20,7 +20,7 @@ public partial class Hud : CanvasLayer
 
 	public override void _Ready()
 	{
-		//PortUIContainer.Visible = false;
+		PortUIContainer.Visible = false;
 		if (Multiplayer.IsServer())
 		{
 			GD.Print("Skipping HUD, acting as server");
@@ -39,7 +39,7 @@ public partial class Hud : CanvasLayer
 			port.ShipDeparted += OnPlayerDepartedPort;
 		}
 
-		FindLocalPlayer();
+		CallDeferred(MethodName.FindLocalPlayer);
 	}
 
 	private void OnPlayerEnteredPort(Port port, Player player, Variant payload)
@@ -62,6 +62,7 @@ public partial class Hud : CanvasLayer
 
 			GD.Print($"Setting port UI stock with {shopItems.Length} items");
 			PortUIContainer.SetStock(shopItems);
+			PortUIContainer.UpdateShipMenu();
 		}
 	}
 
@@ -75,8 +76,15 @@ public partial class Hud : CanvasLayer
 
 	private void FindLocalPlayer()
 	{
+		if (PlayersContainer == null)
+		{
+			GD.PrintErr("PlayersContainer is not set in HUD");
+			return;
+		}
+
 		// Find the player that we control
 		var myPeerId = Multiplayer.GetUniqueId();
+		GD.Print($"{PlayersContainer.GetChildCount()}");
 		_player = PlayersContainer.GetNodeOrNull<Player>($"player_{myPeerId}");
 
 		if (_player != null)

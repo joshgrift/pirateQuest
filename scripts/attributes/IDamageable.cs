@@ -6,7 +6,7 @@ namespace PiratesQuest.Attributes;
 public interface IDamageable
 {
   int Health { get; set; }
-  int MaxHealth { get; set; }
+  int MaxHealth { get; }
 
   void TakeDamage(int amount)
   {

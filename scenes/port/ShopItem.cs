@@ -1,6 +1,7 @@
 namespace PiratesQuest;
 
 using Godot;
+using PiratesQuest.Data;
 
 public partial class ShopItem : HBoxContainer
 {

@@ -1,5 +1,7 @@
 namespace PiratesQuest;
 
+using PiratesQuest.Data;
+
 using Godot;
 
 /// <summary>

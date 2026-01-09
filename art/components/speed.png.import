@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c713lu8k76ysi"
-path="res://.godot/imported/collect_wood.png-e7028d404bd53fb5364b2ec2ed79c775.ctex"
+uid="uid://dcdup86pbhnov"
+path="res://.godot/imported/speed.png-aeff4aa03e6635c6dcef2cb14e03a3b2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/upgrades/collect_wood.png"
-dest_files=["res://.godot/imported/collect_wood.png-e7028d404bd53fb5364b2ec2ed79c775.ctex"]
+source_file="res://art/components/speed.png"
+dest_files=["res://.godot/imported/speed.png-aeff4aa03e6635c6dcef2cb14e03a3b2.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvdpjkh5fm7bq"
-path="res://.godot/imported/acceleration.png-305d64ac6d5fa8654d9a82bbdc9b6aae.ctex"
+uid="uid://b4286xetbb38j"
+path="res://.godot/imported/collect_iron.png-afedb6ebde7ca19bb89931a2c1aa3369.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/upgrades/acceleration.png"
-dest_files=["res://.godot/imported/acceleration.png-305d64ac6d5fa8654d9a82bbdc9b6aae.ctex"]
+source_file="res://art/components/collect_iron.png"
+dest_files=["res://.godot/imported/collect_iron.png-afedb6ebde7ca19bb89931a2c1aa3369.ctex"]
 
 [params]
 

@@ -4,6 +4,9 @@ using Godot;
 
 partial class Configuration : Node
 {
+  public static bool RandomSpawnEnabled { get; } = false;
+  public static int StartingCoin { get; } = 100;
+
   public override void _Ready()
   {
     CallDeferred(MethodName.ConfigureWindowTitle);
