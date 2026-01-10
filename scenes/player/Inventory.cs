@@ -1,5 +1,6 @@
 namespace PiratesQuest;
 
+using System.Linq;
 using Godot.Collections;
 using PiratesQuest.Data;
 
@@ -19,24 +20,15 @@ public partial class Inventory
     }
   }
 
-  public void AddItem(InventoryItemType itemType, int amount)
-  {
-    if (_items.ContainsKey(itemType))
-    {
-      _items[itemType] += amount;
-    }
-    else
-    {
-      _items[itemType] = amount;
-    }
-  }
-
-  public bool RemoveItem(InventoryItemType itemType, int amount)
+  public bool UpdateItem(InventoryItemType itemType, int amount)
   {
     var foundItem = _items.TryGetValue(itemType, out int count);
-    if (foundItem && count >= amount)
+    if (!foundItem)
+      _items[itemType] = 0;
+
+    if (count + amount >= 0)
     {
-      _items[itemType] -= amount;
+      _items[itemType] += amount;
       return true;
     }
 
@@ -46,5 +38,11 @@ public partial class Inventory
   public Dictionary<InventoryItemType, int> GetAll()
   {
     return new Dictionary<InventoryItemType, int>(_items);
+
+  }
+
+  public int GetTotalItemCount(InventoryItemType[] excludeItems = null)
+  {
+    return _items.Where(item => !excludeItems?.Contains(item.Key) ?? true).Sum(item => item.Value);
   }
 }

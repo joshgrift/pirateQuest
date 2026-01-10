@@ -20,6 +20,8 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 	[Signal] public delegate void DeathEventHandler(string playerName);
 	[Signal] public delegate void HealthUpdateEventHandler(int newHealth);
 
+	public bool isLimitedByCapacity = true;
+
 	public readonly PlayerStats Stats = new();
 	public System.Collections.Generic.List<OwnedComponent> OwnedComponents = [];
 
@@ -328,9 +330,9 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 	{
 		GD.Print($"{Name} updating inventory: {item} by {amount} (price: {price})");
 
-		if (amount < 0 && _inventory.GetItemCount(item) < -amount)
+		// Not a bug, we want to allow the user to exceed capacity if they do something in bulk
+		if (_inventory.GetTotalItemCount([InventoryItemType.Coin]) >= Stats.GetStat(PlayerStat.ShipCapacity))
 		{
-			GD.PrintErr($"Not enough {item} to remove. Current: {_inventory.GetItemCount(item)}, Tried to remove: {-amount}");
 			return false;
 		}
 
@@ -340,14 +342,16 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 			return false;
 		}
 
-		_inventory.AddItem(item, amount);
+		_inventory.UpdateItem(item, amount);
 		if (price != 0)
 		{
-			_inventory.AddItem(InventoryItemType.Coin, price);
+			_inventory.UpdateItem(InventoryItemType.Coin, price);
 			EmitSignal(SignalName.InventoryChanged, (int)InventoryItemType.Coin, _inventory.GetItemCount(InventoryItemType.Coin));
 		}
 
 		EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));
+
+		isLimitedByCapacity = _inventory.GetTotalItemCount([InventoryItemType.Coin]) > Stats.GetStat(PlayerStat.ShipCapacity);
 		return true;
 	}
 

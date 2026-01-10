@@ -7,10 +7,11 @@ using Godot.Collections;
 public partial class Hud : Control
 {
 	[Export] public Tree InventoryList;
-	[Export] public CanvasItem ReadyToFireContainer;
 	[Export] public PortUi PortUIContainer;
 	[Export] public Label HealthLabel;
 	[Export] public Node3D PlayersContainer;
+
+	[Export] public VBoxContainer StatusListContainer;
 
 	private Player _player;
 	private int _retryCount = 0;
@@ -94,17 +95,17 @@ public partial class Hud : Control
 
 			_player.CannonReadyToFire += () =>
 			{
-				ReadyToFireContainer.Visible = true;
+				StatusListContainer.GetNode<Control>("ReadyToFire").Visible = true;
 			};
 
 			_player.CannonFired += () =>
 			{
-				ReadyToFireContainer.Visible = false;
+				StatusListContainer.GetNode<Control>("ReadyToFire").Visible = false;
 			};
 
 			_player.HealthUpdate += (newHealth) =>
 			{
-				HealthLabel.Text = $"Health: {newHealth}";
+				HealthLabel.Text = $"{newHealth}";
 			};
 
 			GD.Print($"HUD connected to Player{myPeerId}");
@@ -165,6 +166,15 @@ public partial class Hud : Control
 			item.SetIcon(0, Icons.GetInventoryIcon(itemType));
 			item.SetText(1, newAmount.ToString());
 			InventoryTreeReferences.Add(itemType, item);
+		}
+
+		if (_player.isLimitedByCapacity)
+		{
+			StatusListContainer.GetNode<Control>("Heavy").Visible = true;
+		}
+		else
+		{
+			StatusListContainer.GetNode<Control>("Heavy").Visible = false;
 		}
 	}
 }
