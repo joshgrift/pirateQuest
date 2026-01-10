@@ -25,7 +25,8 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
   - [Prototype Textures](https://kenney.nl/assets/prototype-textures)
   - [Pirate Pack](https://kenney.nl/assets/pirate-kit)
 
-## Todo for first alpha trial
+## TODO before tests
+### 0.2.0 Alpha 
 - [x] Ship movement
 - [x] Multiplayer
 - [ ] Core Game Mechanics
@@ -40,14 +41,19 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
     - [ ] Allow multiple of the same component
     - [ ] Auto Heal Mechanic
   - [ ] Pickup dead player rewards
-- [ ] API for AI characters
-  - [ ] Different ship design for AI character?
+- [ ] Quests to get skulls
 - [ ] Leaderboards
 - [ ] Graphics
-  - [ ] Water
   - [x] Opaque collection spaces
   - [ ] Hit Markers
   - [ ] Cannon shot graphics and shoot from side
   - [x] Collection spots have island
-  - [ ] Proper Map graphics
+  - [ ] Basic Water & Island Graphics
 - [x] Distribution
+
+### 0.3.0 Alpha
+- [ ] API for AI characters
+  - [ ] Different ship design for AI character?
+- [ ] Graphics
+  - [ ] Water
+  - [ ] Proper Map graphics
