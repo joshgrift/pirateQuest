@@ -20,6 +20,8 @@ public partial class PortUi : PanelContainer
 	[Export] public Control ShipComponentsContainer;
 	[Export] public Control ActiveShipComponentsContainer;
 
+	[Export] public Label ActiveShipComponentsLabel;
+
 	private TreeItem _buyListRoot;
 	private TreeItem _sellListRoot;
 
@@ -179,18 +181,17 @@ public partial class PortUi : PanelContainer
 	public void UpdateShipMenu()
 	{
 		// Components
-		LoadComponents(BuyComponentsContainer, [..
-		GameData.Components.Where(c => !Player.OwnedComponents.Any(oc => oc.Component == c))
-		]);
-
-
+		LoadComponents(BuyComponentsContainer, [.. GameData.Components]);
 
 		LoadComponents(ActiveShipComponentsContainer, [
 			.. Player.OwnedComponents.Where(oc => oc.isEquipped).Select(oc => oc.Component)
-			], true);
+			], HudShipComponentStatus.Equipped);
+
 		LoadComponents(ShipComponentsContainer, [
 			.. Player.OwnedComponents.Where(oc => !oc.isEquipped).Select(oc => oc.Component)
-			], true);
+			], HudShipComponentStatus.Owned);
+
+		ActiveShipComponentsLabel.Text = $"Active Components ({Player.OwnedComponents.Count(oc => oc.isEquipped)}/{Player.Stats.GetStat(PlayerStat.ComponentCapacity)})";
 
 		// Stats
 		_shipStatsRoot.CallRecursive("free");
@@ -205,7 +206,7 @@ public partial class PortUi : PanelContainer
 		ShipStatsTree.CustomMinimumSize = new Vector2(0, Player.Stats.GetAllStats().Count * 36);
 	}
 
-	private void LoadComponents(Control control, Component[] components, bool isOwned = false)
+	private void LoadComponents(Control control, Component[] components, HudShipComponentStatus status = HudShipComponentStatus.ForSale)
 	{
 		foreach (Node child in control.GetChildren())
 		{
@@ -215,15 +216,22 @@ public partial class PortUi : PanelContainer
 		foreach (var component in components)
 		{
 			var componentUi = _componentScene.Instantiate<HudShipComponent>();
-			componentUi.SetComponent(component, isOwned);
-			componentUi.BuyButtonClicked += () =>
+			componentUi.SetComponent(component, status);
+			componentUi.ButtonClicked += () =>
 			{
-				Player.PurchaseComponent(component);
-				UpdateShipMenu();
-			};
-			componentUi.EquipButtonClicked += () =>
-			{
-				Player.ToggleComponentEquipped(component);
+				switch (status)
+				{
+					case HudShipComponentStatus.ForSale:
+						Player.PurchaseComponent(component);
+						break;
+					case HudShipComponentStatus.Owned:
+						Player.EquipComponent(component);
+						break;
+					case HudShipComponentStatus.Equipped:
+						Player.UnEquipComponent(component);
+						break;
+				}
+
 				UpdateShipMenu();
 			};
 			control.AddChild(componentUi);

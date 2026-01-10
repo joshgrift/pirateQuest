@@ -26,6 +26,7 @@ public class PlayerStats
     Stats[PlayerStat.CollectionWood] = 1.0f;
     Stats[PlayerStat.CollectionIron] = 1.0f;
     Stats[PlayerStat.ShipCapacity] = 100.0f;
+    Stats[PlayerStat.ComponentCapacity] = 4.0f;
   }
 
   public float GetStat(PlayerStat stat)

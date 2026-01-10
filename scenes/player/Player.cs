@@ -229,18 +229,52 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 		UpdatePlayerStats();
 	}
 
-	public void ToggleComponentEquipped(Component Component)
+	public int GetTotalEquippedComponents()
+	{
+		int count = 0;
+		for (int i = 0; i < OwnedComponents.Count; i++)
+		{
+			if (OwnedComponents[i].isEquipped)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public bool EquipComponent(Component Component)
+	{
+		if (GetTotalEquippedComponents() >= (int)Stats.GetStat(PlayerStat.ComponentCapacity))
+			return false;
+
+		for (int i = 0; i < OwnedComponents.Count; i++)
+		{
+			if (OwnedComponents[i].Component == Component && !OwnedComponents[i].isEquipped)
+			{
+				OwnedComponents[i].isEquipped = true;
+				GD.Print($"{Name} equipped component {Component.name}");
+				UpdatePlayerStats();
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public bool UnEquipComponent(Component Component)
 	{
 		for (int i = 0; i < OwnedComponents.Count; i++)
 		{
-			if (OwnedComponents[i].Component == Component)
+			if (OwnedComponents[i].Component == Component && OwnedComponents[i].isEquipped)
 			{
-				OwnedComponents[i].isEquipped = !OwnedComponents[i].isEquipped;
-				GD.Print($"{Name} toggled component {Component.name} to {(OwnedComponents[i].isEquipped ? "equipped" : "unequipped")}");
+				OwnedComponents[i].isEquipped = false;
+				GD.Print($"{Name} unequipped component {Component.name}");
 				UpdatePlayerStats();
-				break;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	public void UpdatePlayerStats()

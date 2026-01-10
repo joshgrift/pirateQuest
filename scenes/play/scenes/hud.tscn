@@ -65,7 +65,7 @@ layout_mode = 2
 theme = ExtResource("1_pwxli")
 text = "💣  Ready"
 
-[node name="PortUI" type="PanelContainer" parent="." node_paths=PackedStringArray("BuyListTree", "TotalBuyLabel", "BuyButton", "SellListTree", "TotalSellLabel", "SellButton", "ShipStatsTree", "BuyComponentsContainer", "ShipComponentsContainer", "ActiveShipComponentsContainer")]
+[node name="PortUI" type="PanelContainer" parent="." node_paths=PackedStringArray("BuyListTree", "TotalBuyLabel", "BuyButton", "SellListTree", "TotalSellLabel", "SellButton", "ShipStatsTree", "BuyComponentsContainer", "ShipComponentsContainer", "ActiveShipComponentsContainer", "ActiveShipComponentsLabel")]
 custom_minimum_size = Vector2(600, 0)
 layout_mode = 1
 anchors_preset = 11
@@ -89,6 +89,7 @@ ShipStatsTree = NodePath("MarginContainer/Port/MarginContainer/PortTabs/Ship/Scr
 BuyComponentsContainer = NodePath("MarginContainer/Port/MarginContainer/PortTabs/Components/ScrollContainer/BuyComponentsVbox")
 ShipComponentsContainer = NodePath("MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer/ShipComponentsVbox")
 ActiveShipComponentsContainer = NodePath("MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer/ActiveShipComponents")
+ActiveShipComponentsLabel = NodePath("MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer/ActiveComponentsLabel")
 
 [node name="MarginContainer" type="MarginContainer" parent="PortUI"]
 layout_mode = 2
@@ -112,7 +113,7 @@ theme_override_constants/margin_top = 20
 
 [node name="PortTabs" type="TabContainer" parent="PortUI/MarginContainer/Port/MarginContainer"]
 layout_mode = 2
-current_tab = 2
+current_tab = 4
 
 [node name="Buy" type="GridContainer" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs"]
 visible = false
@@ -177,6 +178,7 @@ size_flags_horizontal = 8
 text = "Sell"
 
 [node name="Components" type="GridContainer" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
@@ -204,7 +206,6 @@ offset_bottom = 51.0
 text = "test"
 
 [node name="Ship" type="VBoxContainer" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 4
 
@@ -217,7 +218,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label2" type="Label" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer"]
+[node name="ActiveComponentsLabel" type="Label" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 text = "Active Components"
 

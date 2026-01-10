@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://devhh02yinryt" path="res://art/components/revenue_small.png" id="1_ntns2"]
 [ext_resource type="Theme" uid="uid://sj508xa6kulh" path="res://scenes/play/hud_theme.tres" id="3_101h8"]
 
-[node name="ShipComponent" type="MarginContainer" node_paths=PackedStringArray("ComponentNameLabel", "ComponentDescriptionLabel", "ComponentIcon", "CostList", "BuyButton", "EquipButton")]
+[node name="ShipComponent" type="MarginContainer" node_paths=PackedStringArray("ComponentNameLabel", "ComponentDescriptionLabel", "ComponentIcon", "CostList", "Button")]
 offset_left = 328.0
 offset_right = 328.0
 offset_bottom = 110.0
@@ -16,8 +16,7 @@ ComponentNameLabel = NodePath("HBox/VBoxContainer/Name")
 ComponentDescriptionLabel = NodePath("HBox/VBoxContainer/Description")
 ComponentIcon = NodePath("HBox/Icon")
 CostList = NodePath("HBox/VBoxContainer/Cost")
-BuyButton = NodePath("HBox/VBoxContainer/HBoxContainer/BuyButton")
-EquipButton = NodePath("HBox/VBoxContainer/HBoxContainer/EquipButton")
+Button = NodePath("HBox/VBoxContainer/HBoxContainer/Button")
 
 [node name="HBox" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -47,10 +46,7 @@ layout_mode = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="HBox/VBoxContainer"]
 layout_mode = 2
 
-[node name="BuyButton" type="Button" parent="HBox/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="HBox/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Buy"
-
-[node name="EquipButton" type="Button" parent="HBox/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Toggle"

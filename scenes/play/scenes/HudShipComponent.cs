@@ -1,42 +1,38 @@
+namespace PiratesQuest;
+
 using Godot;
 using PiratesQuest.Data;
 using PiratesQuest;
 
+public enum HudShipComponentStatus
+{
+	ForSale,
+	Owned,
+	Equipped
+}
+
 public partial class HudShipComponent : MarginContainer
 {
 	[Signal]
-	public delegate void BuyButtonClickedEventHandler();
-
-	[Signal]
-	public delegate void EquipButtonClickedEventHandler();
+	public delegate void ButtonClickedEventHandler();
 
 	[Export] public Label ComponentNameLabel;
 	[Export] public Label ComponentDescriptionLabel;
 	[Export] public TextureRect ComponentIcon;
 	[Export] public HBoxContainer CostList;
-	[Export] public Button BuyButton;
-	[Export] public Button EquipButton;
+	[Export] public Button Button;
 
-	// Called when the node enters the scene tree for the first time
 	public override void _Ready()
 	{
-		BuyButton.Pressed += OnBuyButtonPressed;
-		EquipButton.Pressed += OnEquipButtonPressed;
+		Button.Pressed += OnButtonPressed;
 	}
 
-	// Handler for buy button - emits our custom signal
-	private void OnBuyButtonPressed()
+	private void OnButtonPressed()
 	{
-		EmitSignal(SignalName.BuyButtonClicked);
+		EmitSignal(SignalName.ButtonClicked);
 	}
 
-	// Handler for equip button - emits our custom signal
-	private void OnEquipButtonPressed()
-	{
-		EmitSignal(SignalName.EquipButtonClicked);
-	}
-
-	public void SetComponent(Component component, bool isOwned = false)
+	public void SetComponent(Component component, HudShipComponentStatus status = HudShipComponentStatus.ForSale)
 	{
 		ComponentNameLabel.Text = component.name;
 		ComponentDescriptionLabel.Text = component.description;
@@ -47,27 +43,27 @@ public partial class HudShipComponent : MarginContainer
 		ImageTexture resizedTexture = ImageTexture.CreateFromImage(img);
 		ComponentIcon.Texture = resizedTexture;
 
-		if (isOwned)
+		switch (status)
 		{
-			BuyButton.Visible = false;
-			EquipButton.Visible = true;
+			case HudShipComponentStatus.Equipped:
+				Button.Text = "Unequip";
+				break;
+			case HudShipComponentStatus.Owned:
+				Button.Text = "Equip";
+				break;
+			case HudShipComponentStatus.ForSale:
+				Button.Text = "Buy";
+				break;
 		}
-		else
+
+		if (status == HudShipComponentStatus.ForSale)
 		{
-			BuyButton.Visible = true;
-			EquipButton.Visible = false;
-
-			// Clear previous cost items
 			foreach (Node child in CostList.GetChildren())
-			{
 				child.QueueFree();
-			}
 
-			// Add cost items with icons
 			foreach (var costEntry in component.cost)
 			{
-				// Create container for each cost item (icon + label)
-				HBoxContainer costItem = new HBoxContainer();
+				HBoxContainer costItem = new();
 
 				// Add icon
 				TextureRect iconRect = new TextureRect();

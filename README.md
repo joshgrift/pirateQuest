@@ -37,8 +37,8 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
   - [ ] Components
     - [x] Can add to ship
     - [x] Can buy in Port
-    - [ ] Limit number of components
-    - [ ] Allow multiple of the same component
+    - [x] Limit number of components
+    - [x] Allow multiple of the same component
     - [ ] Limit Cargo Size
     - [ ] Increase Collection
     - [ ] Auto Heal Mechanic

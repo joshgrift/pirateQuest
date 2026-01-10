@@ -15,6 +15,7 @@ public enum PlayerStat
   CollectionFish,
   CollectionWood,
   CollectionIron,
+  ComponentCapacity,
 }
 
 public enum RecordPlayerStatChangeModifier
