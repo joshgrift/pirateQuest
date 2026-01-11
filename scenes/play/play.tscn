@@ -1,6 +1,7 @@
-[gd_scene load_steps=24 format=3 uid="uid://c8c63pod53w2l"]
+[gd_scene load_steps=27 format=3 uid="uid://c8c63pod53w2l"]
 
 [ext_resource type="Script" uid="uid://cie1vrfri8q8x" path="res://scenes/play/Play.cs" id="1_j5m8q"]
+[ext_resource type="Material" uid="uid://75rdt22mc6g" path="res://art/sky/day_sky.tres" id="1_octoo"]
 [ext_resource type="PackedScene" uid="uid://ck3i7203hlvn1" path="res://scenes/play/scenes/hud.tscn" id="3_4dfl3"]
 [ext_resource type="Script" uid="uid://d3pli0crpwxcc" path="res://scripts/FreeCam.cs" id="6_1phcp"]
 [ext_resource type="PackedScene" uid="uid://bkdqs4u6efsoq" path="res://scenes/collectonPoint/collection_point.tscn" id="6_ccytq"]
@@ -8,6 +9,19 @@
 [ext_resource type="PackedScene" uid="uid://bafsgh2fvblr2" path="res://scenes/port/port.tscn" id="9_4dfl3"]
 [ext_resource type="Script" uid="uid://b81r8qngpan6y" path="res://scripts/resources/ShopItemData.cs" id="10_10igl"]
 [ext_resource type="PackedScene" uid="uid://bn2xm3qs47h8j" path="res://scenes/play/scenes/world_island_1.tscn" id="17_blg3p"]
+
+[sub_resource type="Sky" id="Sky_ieg05"]
+sky_material = ExtResource("1_octoo")
+
+[sub_resource type="Environment" id="Environment_1eoep"]
+background_mode = 2
+sky = SubResource("Sky_ieg05")
+ambient_light_source = 2
+ambient_light_color = Color(0.45098, 0.333333, 0.309804, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+glow_enabled = true
+glow_bloom = 0.2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
 size = Vector3(500, 1, 500)
@@ -110,6 +124,9 @@ hud = NodePath("HUD/HUD")
 [node name="HUD" parent="HUD" node_paths=PackedStringArray("PlayersContainer") instance=ExtResource("3_4dfl3")]
 PlayersContainer = NodePath("../../SpawnPoint")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1eoep")
+
 [node name="Ground" type="StaticBody3D" parent="."]
 collision_layer = 4
 collision_mask = 0
@@ -123,9 +140,7 @@ material_override = SubResource("StandardMaterial3D_10igl")
 mesh = SubResource("BoxMesh_ig7tw")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -0.5345293, 0.84515, 0, -0.84515, -0.5345293, 1695, 358.63406, 0)
-light_color = Color(0.8666667, 0.8509804, 0.7411765, 1)
-light_energy = 2.0
+transform = Transform3D(0.984196, 0.113116, -0.136249, 0, 0.7694, 0.638767, 0.177085, -0.628672, 0.75724, 0, 0, 0)
 shadow_enabled = true
 
 [node name="SpawnPoint" type="Node3D" parent="."]
@@ -293,9 +308,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.13727, -1.1444092e-05, 79
 [node name="TerrainBlock46" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102.23262, -1.1444092e-05, 50.416985)
 
-[node name="TerrainBlock47" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.6794, 57.16553, 61.989952)
-
 [node name="TerrainBlock48" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.26641, -1.1444092e-05, 17.286438)
 
@@ -391,9 +403,6 @@ transform = Transform3D(0.95987874, 0, 0.28041542, 0, 1, 0, -0.28041542, 0, 0.95
 
 [node name="TerrainBlock72" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
 transform = Transform3D(0.95987874, 0, 0.28041542, 0, 1, 0, -0.28041542, 0, 0.95987874, -160.06885, -1.1444092e-05, 61.98929)
-
-[node name="TerrainBlock73" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
-transform = Transform3D(0.95987874, 0, 0.28041542, 0, 1, 0, -0.28041542, 0, 0.95987874, -172.17014, 13.933277, 113.343254)
 
 [node name="TerrainBlock74" parent="Terrain/Terrain" instance=ExtResource("7_damvd")]
 transform = Transform3D(0.95987874, 0, 0.28041542, 0, 1, 0, -0.28041542, 0, 0.95987874, -155.50464, -1.1444092e-05, 155.30948)
