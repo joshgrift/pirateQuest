@@ -13,8 +13,8 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/acceleration.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Wood, 500 },
-                { InventoryItemType.Tea, 30 }
+                { InventoryItemType.Wood, 250 },
+                { InventoryItemType.Tea, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -32,7 +32,7 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/speed.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Wood, 500 },
+                { InventoryItemType.Wood, 250 },
                 { InventoryItemType.Iron, 40 }
             },
             statChanges = [
@@ -52,7 +52,7 @@ public static class GameData
             cost = new Dictionary<InventoryItemType, int>
             {
                 { InventoryItemType.Iron, 100 },
-                { InventoryItemType.Wood, 50 }
+                { InventoryItemType.Wood, 100 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -70,8 +70,8 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/cargo.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Wood, 500 },
-                { InventoryItemType.Iron, 75 }
+                { InventoryItemType.Wood, 250 },
+                { InventoryItemType.Iron, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -89,7 +89,7 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/damage.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Iron, 300 },
+                { InventoryItemType.Iron, 150 },
                 { InventoryItemType.CannonBall, 50 }
             },
             statChanges = [
@@ -108,8 +108,8 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/range.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Iron, 200 },
-                { InventoryItemType.CannonBall, 30 }
+                { InventoryItemType.Iron, 150 },
+                { InventoryItemType.CannonBall, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -127,8 +127,8 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/heal.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Tea, 500 },
-                { InventoryItemType.Fish, 200 }
+                { InventoryItemType.Tea, 250 },
+                { InventoryItemType.Fish, 100 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -146,9 +146,9 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/collect_fish.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Wood, 400 },
-                { InventoryItemType.Fish, 100 },
-                { InventoryItemType.Tea, 100 }
+                { InventoryItemType.Wood, 100 },
+                { InventoryItemType.Fish, 50 },
+                { InventoryItemType.Tea, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -166,9 +166,9 @@ public static class GameData
             icon = GD.Load<Texture2D>("res://art/components/collect_wood.png"),
             cost = new Dictionary<InventoryItemType, int>
             {
-                { InventoryItemType.Iron, 200 },
-                { InventoryItemType.Wood, 100 },
-                { InventoryItemType.Tea, 100 }
+                { InventoryItemType.Iron, 100 },
+                { InventoryItemType.Wood, 50 },
+                { InventoryItemType.Tea, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
@@ -187,8 +187,8 @@ public static class GameData
             cost = new Dictionary<InventoryItemType, int>
             {
                 { InventoryItemType.Iron, 100 },
-                { InventoryItemType.Wood, 200 },
-                { InventoryItemType.Tea, 100 }
+                { InventoryItemType.Wood, 100 },
+                { InventoryItemType.Tea, 50 }
             },
             statChanges = [
                 new RecordPlayerStatChange
