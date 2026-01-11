@@ -9,6 +9,7 @@ radius = 10.0
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
 albedo_color = Color(0, 1, 0.09803922, 1)
 uv1_scale = Vector3(2, 2, 2)
+disable_receive_shadows = true
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_y8w4b"]
 height = 1.0

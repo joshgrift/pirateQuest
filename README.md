@@ -44,7 +44,7 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
     - [x] Auto Heal Mechanic
   - [x] Pickup dead player rewards
 - [x] Trophies
-- [ ] Leaderboards
+- [x] Leaderboards
 - [ ] Cannons Shoot from sides
 - [ ] Graphics
   - [x] Opaque collection spaces
@@ -61,3 +61,7 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
 - [ ] Graphics
   - [ ] Water
   - [ ] Proper Map graphics
+
+### 0.4.0 Alpha
+- [ ] Quests
+- [ ] Ship Upgrades

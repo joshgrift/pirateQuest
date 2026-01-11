@@ -8,439 +8,439 @@ using System;
 
 public class OwnedComponent
 {
-	public Component Component;
-	public bool isEquipped;
+  public Component Component;
+  public bool isEquipped;
 }
 
 public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 {
-	[Signal] public delegate void InventoryChangedEventHandler(InventoryItemType itemType, int newAmount);
-	[Signal] public delegate void CannonFiredEventHandler();
-	[Signal] public delegate void CannonReadyToFireEventHandler();
-	[Signal] public delegate void DeathEventHandler(string playerName);
-	[Signal] public delegate void HealthUpdateEventHandler(int newHealth);
+  [Signal] public delegate void InventoryChangedEventHandler(InventoryItemType itemType, int newAmount);
+  [Signal] public delegate void CannonFiredEventHandler();
+  [Signal] public delegate void CannonReadyToFireEventHandler();
+  [Signal] public delegate void DeathEventHandler(string playerName);
+  [Signal] public delegate void HealthUpdateEventHandler(int newHealth);
 
-	public bool isLimitedByCapacity = true;
+  public bool isLimitedByCapacity = true;
 
-	public readonly PlayerStats Stats = new();
-	public System.Collections.Generic.List<OwnedComponent> OwnedComponents = [];
+  public readonly PlayerStats Stats = new();
+  public System.Collections.Generic.List<OwnedComponent> OwnedComponents = [];
 
-	public int FallAcceleration { get; set; } = 75;
-	public int Health { get; set; } = 80;
-	public int MaxHealth => (int)Stats.GetStat(PlayerStat.ShipHullStrength);
+  public int FallAcceleration { get; set; } = 75;
+  public int Health { get; set; } = 80;
+  public int MaxHealth => (int)Stats.GetStat(PlayerStat.ShipHullStrength);
 
-	[Export] public string Nickname { get; set; }
+  [Export] public string Nickname { get; set; }
 
-	[Export] public Node3D CannonPivot;
-	[Export] public MultiplayerSpawner ProjectileSpawner;
-	[Export] public MultiplayerSpawner DeadPlayerSpawner;
-	[Export] public Timer AutoHealTimer;
+  [Export] public Node3D CannonPivot;
+  [Export] public MultiplayerSpawner ProjectileSpawner;
+  [Export] public MultiplayerSpawner DeadPlayerSpawner;
+  [Export] public Timer AutoHealTimer;
 
-	private float _currentSpeed = 0.0f;
-	private Vector3 _targetVelocity = Vector3.Zero;
-	private readonly Inventory _inventory = new();
-	private int _fireCoolDownInSeconds = 2;
-	private double _firedTimerCountdown = 0;
+  private float _currentSpeed = 0.0f;
+  private Vector3 _targetVelocity = Vector3.Zero;
+  private readonly Inventory _inventory = new();
+  private int _fireCoolDownInSeconds = 2;
+  private double _firedTimerCountdown = 0;
 
-	public override void _Ready()
-	{
-		// Only enable the camera for the player we control
-		var camera = GetNodeOrNull<Camera3D>("CameraPivot/Camera3D");
-		if (camera != null)
-		{
-			camera.Current = IsMultiplayerAuthority();
-			GD.Print($"{Name}: Camera enabled = {camera.Current}");
-		}
+  public override void _Ready()
+  {
+    // Only enable the camera for the player we control
+    var camera = GetNodeOrNull<Camera3D>("CameraPivot/Camera3D");
+    if (camera != null)
+    {
+      camera.Current = IsMultiplayerAuthority();
+      GD.Print($"{Name}: Camera enabled = {camera.Current}");
+    }
 
-		if (IsMultiplayerAuthority())
-		{
-			var identity = GetNode<Identity>("/root/Identity");
-			Nickname = identity.PlayerName;
-			GD.Print($"{Name} is local player with nickname {Nickname}");
-		}
+    if (IsMultiplayerAuthority())
+    {
+      var identity = GetNode<Identity>("/root/Identity");
+      Nickname = identity.PlayerName;
+      GD.Print($"{Name} is local player with nickname {Nickname}");
+    }
 
-		if (Configuration.RandomSpawnEnabled)
-			RandomSpawn(100, 100);
+    if (Configuration.RandomSpawnEnabled)
+      RandomSpawn(100, 100);
 
-		if (Configuration.IsCreative)
-		{
-			foreach (InventoryItemType itemType in Enum.GetValues<InventoryItemType>())
-			{
-				CallDeferred(MethodName.UpdateInventory, (int)itemType, 100000);
-			}
-		}
+    if (Configuration.IsCreative)
+    {
+      foreach (InventoryItemType itemType in Enum.GetValues<InventoryItemType>())
+      {
+        CallDeferred(MethodName.UpdateInventory, (int)itemType, 100000);
+      }
+    }
 
-		CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.CannonBall, 10);
-		CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.Coin, Configuration.StartingCoin);
+    CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.CannonBall, 10);
+    CallDeferred(MethodName.UpdateInventory, (int)InventoryItemType.Coin, Configuration.StartingCoin);
 
-		// Set up auto-heal timer
-		if (AutoHealTimer != null && IsMultiplayerAuthority())
-		{
-			AutoHealTimer.WaitTime = 10.0; // Heal every 10 seconds
-			AutoHealTimer.Timeout += OnAutoHealTimeout;
-			AutoHealTimer.Start();
-		}
-	}
+    // Set up auto-heal timer
+    if (AutoHealTimer != null && IsMultiplayerAuthority())
+    {
+      AutoHealTimer.WaitTime = 10.0; // Heal every 10 seconds
+      AutoHealTimer.Timeout += OnAutoHealTimeout;
+      AutoHealTimer.Start();
+    }
+  }
 
-	private void RandomSpawn(int startXRange, int startYRange)
-	{
-		var rng = new RandomNumberGenerator();
-		rng.Randomize();
-		GlobalPosition = new Vector3(
-			rng.Randf() * startYRange - startYRange / 2,
-			GlobalPosition.Y,
-			rng.Randf() * startXRange - startXRange / 2
-		);
-	}
+  private void RandomSpawn(int startXRange, int startYRange)
+  {
+    var rng = new RandomNumberGenerator();
+    rng.Randomize();
+    GlobalPosition = new Vector3(
+        rng.Randf() * startYRange - startYRange / 2,
+        GlobalPosition.Y,
+        rng.Randf() * startXRange - startXRange / 2
+    );
+  }
 
-	public override void _PhysicsProcess(double delta)
-	{
-		if (IsMultiplayerAuthority())
-		{
-			// Movement
-			UpdateMovement((float)delta);
+  public override void _PhysicsProcess(double delta)
+  {
+    if (IsMultiplayerAuthority())
+    {
+      // Movement
+      UpdateMovement((float)delta);
 
-			// Firing
-			if (_firedTimerCountdown < 0)
-			{
-				_firedTimerCountdown = 0;
-				EmitSignal(SignalName.CannonReadyToFire);
-			}
-			else
-			{
-				_firedTimerCountdown -= delta;
-			}
+      // Firing
+      if (_firedTimerCountdown < 0)
+      {
+        _firedTimerCountdown = 0;
+        EmitSignal(SignalName.CannonReadyToFire);
+      }
+      else
+      {
+        _firedTimerCountdown -= delta;
+      }
 
-			if (Input.IsActionPressed("fire_cannons") && _firedTimerCountdown <= 0)
-			{
-				FireCannons();
-			}
-		}
-	}
+      if (Input.IsActionPressed("fire_cannons") && _firedTimerCountdown <= 0)
+      {
+        FireCannons();
+      }
+    }
+  }
 
-	private void FireCannons()
-	{
-		if (_inventory.GetItemCount(InventoryItemType.CannonBall) <= 0)
-		{
-			GD.PrintErr($"{Name} tried to fire cannons but has no cannonballs!");
-			_firedTimerCountdown = 0.1f;
-			return;
-		}
+  private void FireCannons()
+  {
+    if (_inventory.GetItemCount(InventoryItemType.CannonBall) <= 0)
+    {
+      GD.PrintErr($"{Name} tried to fire cannons but has no cannonballs!");
+      _firedTimerCountdown = 0.1f;
+      return;
+    }
 
-		UpdateInventory(InventoryItemType.CannonBall, -1);
+    UpdateInventory(InventoryItemType.CannonBall, -1);
 
-		_firedTimerCountdown = _fireCoolDownInSeconds;
-		var spawnData = new Godot.Collections.Dictionary
-		{
-			["position"] = CannonPivot.GlobalPosition,
-			["direction"] = GlobalTransform.Basis.Z * -1,
-			["speed"] = _currentSpeed,
-			["playerName"] = Name
-		};
+    _firedTimerCountdown = _fireCoolDownInSeconds;
+    var spawnData = new Godot.Collections.Dictionary
+    {
+      ["position"] = CannonPivot.GlobalPosition,
+      ["direction"] = GlobalTransform.Basis.Z * -1,
+      ["speed"] = _currentSpeed,
+      ["playerName"] = Name
+    };
 
-		Rpc(MethodName.RequestFireCannons, spawnData);
-		EmitSignal(SignalName.CannonFired);
-	}
+    Rpc(MethodName.RequestFireCannons, spawnData);
+    EmitSignal(SignalName.CannonFired);
+  }
 
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-	private void RequestFireCannons(Variant data)
-	{
-		if (!Multiplayer.IsServer()) return;
+  [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+  private void RequestFireCannons(Variant data)
+  {
+    if (!Multiplayer.IsServer()) return;
 
-		ProjectileSpawner.Spawn(data);
-	}
+    ProjectileSpawner.Spawn(data);
+  }
 
-	private void UpdateMovement(float delta)
-	{
-		// Get input for forward/backward movement
-		float forwardInput = 0.0f;
-		if (Input.IsActionPressed("move_forward"))
-		{
-			forwardInput = 1.0f;
-		}
-		if (Input.IsActionPressed("move_back"))
-		{
-			forwardInput = -1.0f;
-		}
+  private void UpdateMovement(float delta)
+  {
+    // Get input for forward/backward movement
+    float forwardInput = 0.0f;
+    if (Input.IsActionPressed("move_forward"))
+    {
+      forwardInput = 1.0f;
+    }
+    if (Input.IsActionPressed("move_back"))
+    {
+      forwardInput = -1.0f;
+    }
 
-		// Get input for turning (left/right)
-		float turnInput = 0.0f;
-		if (Input.IsActionPressed("move_right"))
-		{
-			turnInput = 1.0f;
-		}
-		if (Input.IsActionPressed("move_left"))
-		{
-			turnInput = -1.0f;
-		}
+    // Get input for turning (left/right)
+    float turnInput = 0.0f;
+    if (Input.IsActionPressed("move_right"))
+    {
+      turnInput = 1.0f;
+    }
+    if (Input.IsActionPressed("move_left"))
+    {
+      turnInput = -1.0f;
+    }
 
-		// Update speed based on forward input
-		if (forwardInput != 0.0f)
-		{
-			// Accelerate in the direction of input
-			float targetSpeed = forwardInput * Stats.GetStat(PlayerStat.ShipMaxSpeed);
-			_currentSpeed = Mathf.MoveToward(_currentSpeed, targetSpeed, Stats.GetStat(PlayerStat.ShipAcceleration) * (float)delta);
-		}
-		else
-		{
-			// Decelerate when no input (ship drifts to a stop)
-			_currentSpeed = Mathf.MoveToward(_currentSpeed, 0.0f, Stats.GetStat(PlayerStat.ShipDeceleration) * (float)delta);
-		}
+    // Update speed based on forward input
+    if (forwardInput != 0.0f)
+    {
+      // Accelerate in the direction of input
+      float targetSpeed = forwardInput * Stats.GetStat(PlayerStat.ShipMaxSpeed);
+      _currentSpeed = Mathf.MoveToward(_currentSpeed, targetSpeed, Stats.GetStat(PlayerStat.ShipAcceleration) * (float)delta);
+    }
+    else
+    {
+      // Decelerate when no input (ship drifts to a stop)
+      _currentSpeed = Mathf.MoveToward(_currentSpeed, 0.0f, Stats.GetStat(PlayerStat.ShipDeceleration) * (float)delta);
+    }
 
-		// Allow turning with responsive controls (no speed requirement)
-		if (turnInput != 0.0f)
-		{
-			// Rotate the ship - simple and responsive
-			RotateY(-turnInput * Stats.GetStat(PlayerStat.ShipTurnSpeed) * (float)delta);
-		}
+    // Allow turning with responsive controls (no speed requirement)
+    if (turnInput != 0.0f)
+    {
+      // Rotate the ship - simple and responsive
+      RotateY(-turnInput * Stats.GetStat(PlayerStat.ShipTurnSpeed) * (float)delta);
+    }
 
-		// Move the ship in the direction it's facing
-		// The pivot's forward direction is -Z in local space
-		Vector3 forwardDirection = -GlobalTransform.Basis.Z;
+    // Move the ship in the direction it's facing
+    // The pivot's forward direction is -Z in local space
+    Vector3 forwardDirection = -GlobalTransform.Basis.Z;
 
-		// Ground velocity - ship only moves forward/backward in facing direction
-		_targetVelocity.X = forwardDirection.X * _currentSpeed;
-		_targetVelocity.Z = forwardDirection.Z * _currentSpeed;
+    // Ground velocity - ship only moves forward/backward in facing direction
+    _targetVelocity.X = forwardDirection.X * _currentSpeed;
+    _targetVelocity.Z = forwardDirection.Z * _currentSpeed;
 
-		// Vertical velocity
-		if (!IsOnFloor()) // If in the air, fall towards the floor. Literally gravity
-		{
-			_targetVelocity.Y -= FallAcceleration * (float)delta;
-		}
+    // Vertical velocity
+    if (!IsOnFloor()) // If in the air, fall towards the floor. Literally gravity
+    {
+      _targetVelocity.Y -= FallAcceleration * (float)delta;
+    }
 
-		// Moving the character
-		Velocity = _targetVelocity;
-		MoveAndSlide();
-	}
+    // Moving the character
+    Velocity = _targetVelocity;
+    MoveAndSlide();
+  }
 
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-	public void TakeDamage(int amount)
-	{
-		if (!IsMultiplayerAuthority()) return;
+  [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+  public void TakeDamage(int amount)
+  {
+    if (!IsMultiplayerAuthority()) return;
 
-		Health -= amount;
-		if (Health <= 0)
-		{
-			OnDeath();
-		}
-		else
-		{
-			EmitSignal(SignalName.HealthUpdate, Health);
-		}
-		GD.Print($"health = {Health}");
-	}
+    Health -= amount;
+    if (Health <= 0)
+    {
+      OnDeath();
+    }
+    else
+    {
+      EmitSignal(SignalName.HealthUpdate, Health);
+    }
+    GD.Print($"health = {Health}");
+  }
 
-	public void OnDeath()
-	{
-		GD.Print($"dead: {Name}");
-		Rpc(MethodName.ServerDeath, new Dictionary
-		{
-			["peerId"] = Multiplayer.GetUniqueId(),
-			["nickname"] = Nickname,
-			["position"] = GlobalPosition,
-			["items"] = _inventory.GetAll()
-		});
-		EmitSignal(SignalName.Death, Name);
-	}
+  public void OnDeath()
+  {
+    GD.Print($"dead: {Name}");
+    Rpc(MethodName.ServerDeath, new Dictionary
+    {
+      ["peerId"] = Multiplayer.GetUniqueId(),
+      ["nickname"] = Nickname,
+      ["position"] = GlobalPosition,
+      ["items"] = _inventory.GetAll()
+    });
+    EmitSignal(SignalName.Death, Name);
+  }
 
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-	public void ServerDeath(Variant spawnData)
-	{
-		if (!Multiplayer.IsServer()) return;
-		DeadPlayerSpawner.Spawn(spawnData);
-	}
+  [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+  public void ServerDeath(Variant spawnData)
+  {
+    if (!Multiplayer.IsServer()) return;
+    DeadPlayerSpawner.Spawn(spawnData);
+  }
 
-	private void OnAutoHealTimeout()
-	{
-		if (!IsMultiplayerAuthority()) return;
+  private void OnAutoHealTimeout()
+  {
+    if (!IsMultiplayerAuthority()) return;
 
-		int healAmount = (int)Stats.GetStat(PlayerStat.HealthRegen);
+    int healAmount = (int)Stats.GetStat(PlayerStat.HealthRegen);
 
-		if (healAmount > 0 && Health < MaxHealth)
-		{
-			Health = Mathf.Min(Health + healAmount, MaxHealth);
-			EmitSignal(SignalName.HealthUpdate, Health);
-		}
-	}
+    if (healAmount > 0 && Health < MaxHealth)
+    {
+      Health = Mathf.Min(Health + healAmount, MaxHealth);
+      EmitSignal(SignalName.HealthUpdate, Health);
+    }
+  }
 
-	public void PurchaseComponent(Component Component)
-	{
-		if (!MakePurchase(Component.cost))
-			return;
+  public void PurchaseComponent(Component Component)
+  {
+    if (!MakePurchase(Component.cost))
+      return;
 
-		OwnedComponents.Add(new OwnedComponent
-		{
-			Component = Component,
-			isEquipped = false
-		});
+    OwnedComponents.Add(new OwnedComponent
+    {
+      Component = Component,
+      isEquipped = false
+    });
 
-		UpdatePlayerStats();
-	}
+    UpdatePlayerStats();
+  }
 
-	public int GetTotalEquippedComponents()
-	{
-		int count = 0;
-		for (int i = 0; i < OwnedComponents.Count; i++)
-		{
-			if (OwnedComponents[i].isEquipped)
-			{
-				count++;
-			}
-		}
-		return count;
-	}
+  public int GetTotalEquippedComponents()
+  {
+    int count = 0;
+    for (int i = 0; i < OwnedComponents.Count; i++)
+    {
+      if (OwnedComponents[i].isEquipped)
+      {
+        count++;
+      }
+    }
+    return count;
+  }
 
-	public bool EquipComponent(Component Component)
-	{
-		if (GetTotalEquippedComponents() >= (int)Stats.GetStat(PlayerStat.ComponentCapacity))
-			return false;
+  public bool EquipComponent(Component Component)
+  {
+    if (GetTotalEquippedComponents() >= (int)Stats.GetStat(PlayerStat.ComponentCapacity))
+      return false;
 
-		for (int i = 0; i < OwnedComponents.Count; i++)
-		{
-			if (OwnedComponents[i].Component == Component && !OwnedComponents[i].isEquipped)
-			{
-				OwnedComponents[i].isEquipped = true;
-				GD.Print($"{Name} equipped component {Component.name}");
-				UpdatePlayerStats();
-				return true;
-			}
-		}
+    for (int i = 0; i < OwnedComponents.Count; i++)
+    {
+      if (OwnedComponents[i].Component == Component && !OwnedComponents[i].isEquipped)
+      {
+        OwnedComponents[i].isEquipped = true;
+        GD.Print($"{Name} equipped component {Component.name}");
+        UpdatePlayerStats();
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public bool UnEquipComponent(Component Component)
-	{
-		for (int i = 0; i < OwnedComponents.Count; i++)
-		{
-			if (OwnedComponents[i].Component == Component && OwnedComponents[i].isEquipped)
-			{
-				OwnedComponents[i].isEquipped = false;
-				GD.Print($"{Name} unequipped component {Component.name}");
-				UpdatePlayerStats();
-				return true;
-			}
-		}
+  public bool UnEquipComponent(Component Component)
+  {
+    for (int i = 0; i < OwnedComponents.Count; i++)
+    {
+      if (OwnedComponents[i].Component == Component && OwnedComponents[i].isEquipped)
+      {
+        OwnedComponents[i].isEquipped = false;
+        GD.Print($"{Name} unequipped component {Component.name}");
+        UpdatePlayerStats();
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public void UpdatePlayerStats()
-	{
-		Stats.ResetStats();
+  public void UpdatePlayerStats()
+  {
+    Stats.ResetStats();
 
-		foreach (var ownedComponent in OwnedComponents)
-		{
-			if (ownedComponent.isEquipped)
-			{
-				foreach (var statChange in ownedComponent.Component.statChanges)
-				{
-					Stats.ApplyStatChange(statChange);
-				}
-			}
-		}
-	}
+    foreach (var ownedComponent in OwnedComponents)
+    {
+      if (ownedComponent.isEquipped)
+      {
+        foreach (var statChange in ownedComponent.Component.statChanges)
+        {
+          Stats.ApplyStatChange(statChange);
+        }
+      }
+    }
+  }
 
-	public bool CanMakePurchase(Dictionary<InventoryItemType, int> cost)
-	{
-		foreach (var item in cost)
-		{
-			if (_inventory.GetItemCount(item.Key) < item.Value)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  public bool CanMakePurchase(Dictionary<InventoryItemType, int> cost)
+  {
+    foreach (var item in cost)
+    {
+      if (_inventory.GetItemCount(item.Key) < item.Value)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	public bool MakePurchase(Dictionary<InventoryItemType, int> cost)
-	{
-		if (!CanMakePurchase(cost))
-		{
-			return false;
-		}
+  public bool MakePurchase(Dictionary<InventoryItemType, int> cost)
+  {
+    if (!CanMakePurchase(cost))
+    {
+      return false;
+    }
 
-		foreach (var item in cost)
-		{
-			UpdateInventory(item.Key, -item.Value);
-		}
-		return true;
-	}
+    foreach (var item in cost)
+    {
+      UpdateInventory(item.Key, -item.Value);
+    }
+    return true;
+  }
 
-	public bool CollectResource(InventoryItemType item, int amount)
-	{
-		float total = (float)amount;
+  public bool CollectResource(InventoryItemType item, int amount)
+  {
+    float total = (float)amount;
 
-		switch (item)
-		{
-			case InventoryItemType.Fish:
-				total = amount * Stats.GetStat(PlayerStat.CollectionFish);
-				break;
-			case InventoryItemType.Wood:
-				total = amount * Stats.GetStat(PlayerStat.CollectionWood);
-				break;
-			case InventoryItemType.Iron:
-				total = amount * Stats.GetStat(PlayerStat.CollectionIron);
-				break;
-			default:
-				break;
-		}
-		return UpdateInventory(item, Mathf.RoundToInt(total));
-	}
+    switch (item)
+    {
+      case InventoryItemType.Fish:
+        total = amount * Stats.GetStat(PlayerStat.CollectionFish);
+        break;
+      case InventoryItemType.Wood:
+        total = amount * Stats.GetStat(PlayerStat.CollectionWood);
+        break;
+      case InventoryItemType.Iron:
+        total = amount * Stats.GetStat(PlayerStat.CollectionIron);
+        break;
+      default:
+        break;
+    }
+    return UpdateInventory(item, Mathf.RoundToInt(total));
+  }
 
-	public bool BulkCollect(Dictionary<InventoryItemType, int> items)
-	{
-		foreach (var item in items)
-		{
-			if (!UpdateInventory(item.Key, item.Value))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  public bool BulkCollect(Dictionary<InventoryItemType, int> items)
+  {
+    foreach (var item in items)
+    {
+      if (!UpdateInventory(item.Key, item.Value))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	public bool UpdateInventory(InventoryItemType item, int amount)
-	{
-		return UpdateInventory(item, amount, 0);
-	}
+  public bool UpdateInventory(InventoryItemType item, int amount)
+  {
+    return UpdateInventory(item, amount, 0);
+  }
 
-	public bool UpdateInventory(InventoryItemType item, int amount, int price = 0)
-	{
-		GD.Print($"{Name} updating inventory: {item} by {amount} (price: {price})");
+  public bool UpdateInventory(InventoryItemType item, int amount, int price = 0)
+  {
+    // Not a bug, we want to allow the user to exceed capacity if they do something in bulk
+    if (amount > 0 && _inventory.GetTotalItemCount([InventoryItemType.Coin]) >= Stats.GetStat(PlayerStat.ShipCapacity))
+    {
+      GD.PrintErr($"{Name} cannot collect {amount} {item} - inventory full");
+      return false;
+    }
 
-		// Not a bug, we want to allow the user to exceed capacity if they do something in bulk
-		if (_inventory.GetTotalItemCount([InventoryItemType.Coin]) >= Stats.GetStat(PlayerStat.ShipCapacity))
-		{
-			return false;
-		}
+    if (_inventory.GetItemCount(InventoryItemType.Coin) + price < 0)
+    {
+      GD.PrintErr($"Cannot afford transaction. Current Gold: {_inventory.GetItemCount(InventoryItemType.Coin)}, Price: {price}");
+      return false;
+    }
 
-		if (_inventory.GetItemCount(InventoryItemType.Coin) + price < 0)
-		{
-			GD.PrintErr($"Cannot afford transaction. Current Gold: {_inventory.GetItemCount(InventoryItemType.Coin)}, Price: {price}");
-			return false;
-		}
+    _inventory.UpdateItem(item, amount);
+    if (price != 0)
+    {
+      _inventory.UpdateItem(InventoryItemType.Coin, price);
+      EmitSignal(SignalName.InventoryChanged, (int)InventoryItemType.Coin, _inventory.GetItemCount(InventoryItemType.Coin));
+    }
 
-		_inventory.UpdateItem(item, amount);
-		if (price != 0)
-		{
-			_inventory.UpdateItem(InventoryItemType.Coin, price);
-			EmitSignal(SignalName.InventoryChanged, (int)InventoryItemType.Coin, _inventory.GetItemCount(InventoryItemType.Coin));
-		}
+    EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));
 
-		EmitSignal(SignalName.InventoryChanged, (int)item, _inventory.GetItemCount(item));
+    isLimitedByCapacity = _inventory.GetTotalItemCount([InventoryItemType.Coin]) > Stats.GetStat(PlayerStat.ShipCapacity);
+    GD.Print($"{Name} updated inventory: {item} by {amount} (price: {price})");
+    return true;
+  }
 
-		isLimitedByCapacity = _inventory.GetTotalItemCount([InventoryItemType.Coin]) > Stats.GetStat(PlayerStat.ShipCapacity);
-		return true;
-	}
+  public int GetInventoryCount(InventoryItemType item)
+  {
+    return _inventory.GetItemCount(item);
+  }
 
-	public int GetInventoryCount(InventoryItemType item)
-	{
-		return _inventory.GetItemCount(item);
-	}
-
-	public Dictionary<InventoryItemType, int> GetInventory()
-	{
-		return _inventory.GetAll();
-	}
+  public Dictionary<InventoryItemType, int> GetInventory()
+  {
+    return _inventory.GetAll();
+  }
 }

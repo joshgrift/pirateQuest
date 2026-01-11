@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c8c63pod53w2l"]
+[gd_scene load_steps=22 format=3 uid="uid://c8c63pod53w2l"]
 
 [ext_resource type="Script" uid="uid://cie1vrfri8q8x" path="res://scenes/play/Play.cs" id="1_j5m8q"]
 [ext_resource type="PackedScene" uid="uid://ck3i7203hlvn1" path="res://scenes/play/scenes/hud.tscn" id="3_4dfl3"]
@@ -44,6 +44,19 @@ BuyPrice = 1000000
 SellPrice = 0
 metadata/_custom_type_script = "uid://b81r8qngpan6y"
 
+[sub_resource type="Resource" id="Resource_q6imw"]
+script = ExtResource("10_10igl")
+ItemType = 2
+SellPrice = 8
+metadata/_custom_type_script = "uid://b81r8qngpan6y"
+
+[sub_resource type="Resource" id="Resource_qysfa"]
+script = ExtResource("10_10igl")
+ItemType = 3
+BuyPrice = 50
+SellPrice = 40
+metadata/_custom_type_script = "uid://b81r8qngpan6y"
+
 [sub_resource type="Resource" id="Resource_gcg6u"]
 script = ExtResource("10_10igl")
 BuyPrice = 4
@@ -62,6 +75,13 @@ script = ExtResource("10_10igl")
 ItemType = 6
 BuyPrice = 1000000
 SellPrice = 0
+metadata/_custom_type_script = "uid://b81r8qngpan6y"
+
+[sub_resource type="Resource" id="Resource_l2oi0"]
+script = ExtResource("10_10igl")
+ItemType = 3
+BuyPrice = 50
+SellPrice = 45
 metadata/_custom_type_script = "uid://b81r8qngpan6y"
 
 [node name="Play" type="Node3D" node_paths=PackedStringArray("_playerSpawner", "_projectileSpawner", "_deadPlayerSpawner", "_freeCam", "hud")]
@@ -85,7 +105,7 @@ collision_mask = 0
 shape = SubResource("BoxShape3D_0xm2m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055, -1, -0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055, -0.5, -0.055)
 material_override = SubResource("StandardMaterial3D_1bvp3")
 mesh = SubResource("BoxMesh_ig7tw")
 
@@ -434,23 +454,25 @@ ResourceType = 1
 
 [node name="Collection Point2" parent="Interactables" instance=ExtResource("6_ccytq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -102.253654, 1, 115.4908)
-ResourceType = 1
+ResourceType = 2
 
 [node name="CollectionPoint" parent="Interactables" instance=ExtResource("6_ccytq")]
 transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, -44.621, 1, 27.669)
 
 [node name="CollectionPoint2" parent="Interactables" instance=ExtResource("6_ccytq")]
-transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, -161.24391, 1, -57.88156)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -161.24391, 1, -57.88156)
+ResourceType = 3
+CollectionSpeed = 4.0
 
 [node name="Port" parent="Interactables" instance=ExtResource("9_4dfl3")]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0.40486145, 1, 0.15786743)
 PortName = "Saint Johns"
-ItemsForSale = Array[Object]([SubResource("Resource_a0nu5"), SubResource("Resource_bjecb"), SubResource("Resource_10igl"), SubResource("Resource_4dfl3")])
+ItemsForSale = Array[Object]([SubResource("Resource_a0nu5"), SubResource("Resource_bjecb"), SubResource("Resource_10igl"), SubResource("Resource_4dfl3"), SubResource("Resource_q6imw"), SubResource("Resource_qysfa")])
 
 [node name="Port2" parent="Interactables" instance=ExtResource("9_4dfl3")]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -111.896355, 1, -103.57585)
 PortName = "Haven"
-ItemsForSale = Array[Object]([SubResource("Resource_gcg6u"), SubResource("Resource_mric1"), SubResource("Resource_fe62l")])
+ItemsForSale = Array[Object]([SubResource("Resource_gcg6u"), SubResource("Resource_mric1"), SubResource("Resource_fe62l"), SubResource("Resource_l2oi0")])
 
 [node name="DeadPlayerSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("../DeadPlayers")
