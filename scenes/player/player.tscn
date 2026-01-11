@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cumwy7ox3pa0b"]
+[gd_scene load_steps=11 format=3 uid="uid://cumwy7ox3pa0b"]
 
 [ext_resource type="Script" uid="uid://b4ivpos2qv5rq" path="res://scenes/player/Player.cs" id="1_onrkg"]
 [ext_resource type="PackedScene" uid="uid://xg8l1d4eyeyk" path="res://art/kenny_pirate/ship-small.glb" id="2_onrkg"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://du8tr0updheh4" path="res://art/kenny_pirate/cannon.glb" id="5_0owmy"]
 [ext_resource type="PackedScene" uid="uid://evegr5p7efy1" path="res://art/kenny_pirate/crate-bottles.glb" id="6_qek5x"]
 [ext_resource type="PackedScene" uid="uid://bbde00hqcee0c" path="res://art/kenny_pirate/bottle.glb" id="7_5gtgg"]
+[ext_resource type="AudioStream" uid="uid://cmd7nopamiq1o" path="res://art/sounds/jcsounds/Misc Sfx/sfx_cannon_fire_01.wav" id="8_qek5x"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_i3pqv"]
 properties/0/path = NodePath(".:position")
@@ -28,12 +29,13 @@ properties/4/replication_mode = 1
 [sub_resource type="BoxShape3D" id="BoxShape3D_i3pqv"]
 size = Vector3(4.721039, 8.911621, 7.52652)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CannonPivotLeft", "CannonPivotRight", "AutoHealTimer")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CannonPivotLeft", "CannonPivotRight", "AutoHealTimer", "_cannonSoundPlayer")]
 collision_mask = 5
 script = ExtResource("1_onrkg")
 CannonPivotLeft = NodePath("CannonLeft")
 CannonPivotRight = NodePath("CannonRight")
 AutoHealTimer = NodePath("Timer")
+_cannonSoundPlayer = NodePath("CannonFireSound")
 WaterNoiseResource = ExtResource("4_water")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
@@ -74,3 +76,7 @@ script = ExtResource("3_i3pqv")
 transform = Transform3D(1, 0, 0, 0, 0.6467898, 0.7626684, 0, -0.7626684, 0.6467898, 0, 27.871, 25.183)
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="CannonFireSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("8_qek5x")
+volume_db = 31.056
