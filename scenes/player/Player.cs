@@ -36,6 +36,17 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   [Export] public MultiplayerSpawner DeadPlayerSpawner;
   [Export] public Timer AutoHealTimer;
 
+  // Water Physics Properties
+  [ExportGroup("Water Physics")]
+  [Export] public FastNoiseLite WaterNoiseResource { get; set; }
+  [Export] public MeshInstance3D WaterPlane { get; set; }
+  [Export] public float WaveHeight { get; set; } = 1.0f;
+  [Export] public float WaveSpeed { get; set; } = 0.05f;
+  [Export] public float WaterNoiseScale { get; set; } = 0.002f;
+  [Export] public float ShipLength { get; set; } = 5.0f;
+  [Export] public float VerticalOffset { get; set; } = -0.2f;
+  [Export] public float WaterSmoothSpeed { get; set; } = 5.0f;
+
   private float _currentSpeed = 0.0f;
   private Vector3 _targetVelocity = Vector3.Zero;
   private readonly Inventory _inventory = new();
@@ -57,6 +68,20 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
       var identity = GetNode<Identity>("/root/Identity");
       Nickname = identity.PlayerName;
       GD.Print($"{Name} is local player with nickname {Nickname}");
+    }
+
+    // Try to find water plane if not set
+    if (WaterPlane == null)
+    {
+      WaterPlane = GetNodeOrNull<MeshInstance3D>("/root/Play/Ground/WaterPlane");
+      if (WaterPlane != null)
+      {
+        GD.Print($"{Name}: Found WaterPlane at absolute path");
+      }
+      else
+      {
+        GD.PrintErr($"{Name}: Could not find WaterPlane!");
+      }
     }
 
     if (Configuration.RandomSpawnEnabled)
@@ -202,15 +227,17 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
     _targetVelocity.X = forwardDirection.X * _currentSpeed;
     _targetVelocity.Z = forwardDirection.Z * _currentSpeed;
 
-    // Vertical velocity
-    if (!IsOnFloor()) // If in the air, fall towards the floor. Literally gravity
-    {
-      _targetVelocity.Y -= FallAcceleration * (float)delta;
-    }
+    // Vertical velocity - controlled by water physics, not gravity
+    // Water physics sets the Y position directly, so we zero out Y velocity
+    _targetVelocity.Y = 0;
 
-    // Moving the character
+    // Moving the character (horizontal movement only)
     Velocity = _targetVelocity;
     MoveAndSlide();
+
+    // Apply water physics AFTER MoveAndSlide (bobbing and pitch)
+    // This ensures our Y position and rotation don't get overwritten
+    ApplyWaterPhysics(delta);
   }
 
   [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
@@ -442,5 +469,78 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   public Dictionary<InventoryItemType, int> GetInventory()
   {
     return _inventory.GetAll();
+  }
+
+  /// <summary>
+  /// Applies water physics to make the boat bob and tilt with waves.
+  /// This method samples the water height at the bow and stern of the ship,
+  /// then adjusts vertical position and pitch rotation accordingly.
+  /// </summary>
+  private void ApplyWaterPhysics(float delta)
+  {
+    // Skip if water physics is not configured
+    if (WaterNoiseResource == null || WaterPlane == null)
+    {
+      GD.PrintErr($"Water physics not configured! NoiseResource: {WaterNoiseResource != null}, WaterPlane: {WaterPlane != null}");
+      return;
+    }
+
+    // Get current game time in seconds
+    float time = Time.GetTicksMsec() / 1000.0f;
+    Vector3 pos = GlobalPosition;
+
+    // Get the ship's forward direction (Z axis in local space)
+    Vector3 forwardDir = Transform.Basis.Z;
+
+    // Calculate sampling points at bow (front) and stern (back)
+    Vector3 bowPos = pos + forwardDir * (ShipLength / 2.0f);
+    Vector3 sternPos = pos - forwardDir * (ShipLength / 2.0f);
+
+    // Sample water heights at bow and stern
+    float heightBow = GetWaterHeight(bowPos, time);
+    float heightStern = GetWaterHeight(sternPos, time);
+    float heightAvg = (heightBow + heightStern) / 2.0f;
+
+    // Update vertical position to sit on water surface
+    float planeY = WaterPlane?.GlobalPosition.Y ?? 0.0f;
+    float targetY = heightAvg + planeY + VerticalOffset - 0.5f;
+
+    // Debug output (only occasionally to avoid spam)
+    if (Time.GetTicksMsec() % 1000 < 50)
+    {
+      GD.Print($"Water Physics - heightAvg: {heightAvg:F2}, targetY: {targetY:F2}, currentY: {pos.Y:F2}");
+    }
+
+    // Smoothly interpolate to target Y position
+    Vector3 currentPos = GlobalPosition;
+    currentPos.Y = Mathf.Lerp(currentPos.Y, targetY, delta * WaterSmoothSpeed);
+    GlobalPosition = currentPos;
+
+    // Update pitch rotation based on wave slope
+    float heightDiff = heightBow - heightStern;
+    float targetPitch = -Mathf.Atan2(heightDiff, ShipLength);
+
+    // Smoothly interpolate rotation
+    Vector3 rotation = Rotation;
+    rotation.X = Mathf.LerpAngle(rotation.X, targetPitch, delta * WaterSmoothSpeed);
+    rotation.Z = 0; // Keep roll at zero
+    Rotation = rotation;
+  }
+
+  /// <summary>
+  /// Calculates water height at a specific world position.
+  /// This matches the shader's vertex displacement calculation.
+  /// </summary>
+  private float GetWaterHeight(Vector3 worldPos, float time)
+  {
+    // Convert world position to UV coordinates matching the shader
+    float sampleX = (worldPos.X * WaterNoiseScale) + (time * WaveSpeed);
+    float sampleZ = (worldPos.Z * WaterNoiseScale);
+
+    // Sample the noise (multiply by 100 for proper scale)
+    float noiseVal = WaterNoiseResource.GetNoise2D(sampleX * 100.0f, sampleZ * 100.0f);
+
+    // Normalize from [-1, 1] to [0, 1] and scale by wave height
+    return ((noiseVal + 1.0f) / 2.0f) * WaveHeight;
   }
 }
