@@ -10,6 +10,7 @@ public partial class Hud : Control
 	[Export] public PortUi PortUIContainer;
 	[Export] public Label HealthLabel;
 	[Export] public Node3D PlayersContainer;
+	[Export] public Tree LeaderboardTree;
 
 	[Export] public VBoxContainer StatusListContainer;
 
@@ -41,6 +42,18 @@ public partial class Hud : Control
 		}
 
 		CallDeferred(MethodName.FindLocalPlayer);
+
+
+		var emptyStylebox = new StyleBoxEmpty();
+		LeaderboardTree.AddThemeStyleboxOverride("panel", emptyStylebox);
+		LeaderboardTree.AddThemeStyleboxOverride("bg", emptyStylebox);
+		LeaderboardTree.AddThemeConstantOverride("draw_relationship_lines", 0);
+		LeaderboardTree.AddThemeConstantOverride("draw_guides", 0);
+		LeaderboardTree.AddThemeConstantOverride("v_separation", 0);
+		LeaderboardTree.MouseFilter = Control.MouseFilterEnum.Ignore;
+		LeaderboardTree.HideRoot = true;
+
+		UpdateLeaderboard();
 	}
 
 	private void OnPlayerEnteredPort(Port port, Player player, Variant payload)
@@ -123,6 +136,31 @@ public partial class Hud : Control
 				GD.PrintErr($"Could not find Player{myPeerId} after {MaxRetries} attempts");
 			}
 		}
+	}
+
+	private void UpdateLeaderboard()
+	{
+		LeaderboardTree.Clear();
+		LeaderboardTree.Columns = 2;
+		LeaderboardTree.SetColumnCustomMinimumWidth(0, 32);
+		LeaderboardTree.SetColumnCustomMinimumWidth(1, 100);
+
+		var rootItem = LeaderboardTree.CreateItem();
+
+		var players = PlayersContainer.GetChildren().OfType<Player>()
+			.OrderByDescending(p => p.GetInventoryCount(InventoryItemType.Trophy));
+
+		foreach (var player in players)
+		{
+			if (player.Nickname == "" || player.Nickname == null)
+				continue;
+			var item = LeaderboardTree.CreateItem(rootItem);
+			item.SetText(0, player.GetInventoryCount(InventoryItemType.Trophy).ToString());
+			item.SetIcon(0, Icons.GetInventoryIcon(InventoryItemType.Trophy));
+			item.SetText(1, player.Nickname);
+		}
+
+		GetTree().CreateTimer(5.0f).Timeout += UpdateLeaderboard;
 	}
 
 	private void InitializeInventory()

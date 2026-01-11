@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://prtjo4w4ri2s" path="res://art/status/cannon_ready.png" id="4_wm7av"]
 [ext_resource type="Texture2D" uid="uid://4o6lddvxx6vi" path="res://art/status/health.png" id="5_yo1xf"]
 
-[node name="HUD" type="Control" node_paths=PackedStringArray("InventoryList", "PortUIContainer", "HealthLabel", "StatusListContainer")]
+[node name="HUD" type="Control" node_paths=PackedStringArray("InventoryList", "PortUIContainer", "HealthLabel", "LeaderboardTree", "StatusListContainer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,6 +19,7 @@ script = ExtResource("1_svvuq")
 InventoryList = NodePath("Inventory Container/InventoryTree")
 PortUIContainer = NodePath("PortUI")
 HealthLabel = NodePath("Status Container/VBoxContainer/HBoxContainer/HealthLabel")
+LeaderboardTree = NodePath("LeaderboardContainer/Leaderboard")
 StatusListContainer = NodePath("Status Container/VBoxContainer/StatusList")
 
 [node name="Inventory Container" type="MarginContainer" parent="."]
@@ -240,4 +241,18 @@ layout_mode = 2
 text = "Stats"
 
 [node name="StatsTree" type="Tree" parent="PortUI/MarginContainer/Port/MarginContainer/PortTabs/Ship/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LeaderboardContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(200, 300)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -150.0
+offset_right = 40.0
+offset_bottom = 150.0
+grow_vertical = 2
+
+[node name="Leaderboard" type="Tree" parent="LeaderboardContainer"]
 layout_mode = 2
