@@ -30,42 +30,25 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
 
 
 ## TODO before tests
-### 0.2.0 Alpha
-- [x] Ship movement
-- [x] Multiplayer
-- [x] Core Game Mechanics
-  - [x] Collection of resources
-  - [x] Three resource types & store
-  - [x] Shooting Cannonballs, health, and death.
-  - [x] Limited Map with islands
-  - [x] Components
-    - [x] Can add to ship
-    - [x] Can buy in Port
-    - [x] Limit number of components
-    - [x] Allow multiple of the same component
-    - [x] Limit Cargo Size
-    - [x] Increase Collection
-    - [x] Auto Heal Mechanic
-  - [x] Pickup dead player rewards
-- [x] Trophies
-- [x] Leaderboards
-- [ ] Cannons Shoot from sides
-- [ ] Graphics
-  - [x] Opaque collection spaces
-  - [ ] Hit Markers
-  - [ ] Cannon shot graphics
-  - [x] Collection spots have island
-  - [ ] Basic Water
-  - [ ] Basic Island Graphics
-- [x] Distribution
-
 ### 0.3.0 Alpha
-- [ ] API for AI characters
-  - [ ] Different ship design for AI character?
-- [ ] Graphics
-  - [ ] Water
-  - [ ] Proper Map graphics
-
+- [ ] Bugs & Improvements
+  - [ ] Backing up controls feel weird
+  - [ ] camera can go upside down
+  - [ ] Auto equip components when you buy them
+  - [ ] Stop player from shooting when dead
+  - [ ] Cannon ball goes too far
+  - [ ] Need the ability to shoot, move, and turn at the same time
+  - [ ] Collection points are too hard to see
+  - [ ] Improve turn radius
+  - [ ] UI to show you collecting items
+  - [ ] Close port menu early
+  - [ ] Reset Port UI when you buy
+  - [ ] Status Tool Tip
+- [ ] Make death less punishing somehow
 ### 0.4.0 Alpha
+- [ ] API for AI characters
+- [ ]
+
+### Later
 - [ ] Quests
 - [ ] Ship Upgrades
