@@ -164,9 +164,12 @@ public partial class CameraPivot : Marker3D
     }
   }
 
-  // If the pivot needs to follow a moving target (like a player), update its position in _process or _physics_process
-  // public override void _Process(double delta)
-  // {
-  //     GlobalPosition = GetParent<Node3D>().GlobalPosition;
-  // }
+  // Override _Process to prevent the camera from inheriting the player's rotation
+  // This keeps the camera focused on the ship but prevents it from tilting/rolling with the ship
+  public override void _Process(double delta)
+  {
+    // Reset the global rotation to only use our camera rotation values
+    // This prevents inheriting the parent's (player ship's) rotation
+    GlobalRotation = new Vector3(_cameraTargetAngleX, _cameraTargetAngleY, 0);
+  }
 }

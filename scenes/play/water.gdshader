@@ -41,9 +41,6 @@ void fragment() {
 	vec3 deep_color = mix(water_color.rgb * 0.7, water_color.rgb * 0.7 + green_tint, green_amount);
 	vec3 color_variation = mix(deep_color, wave_color.rgb, height_current);
 
-	// Add subtle texture detail (reduced for less white)
-	color_variation += (detail - 0.5) * 0.03;  // Very subtle variation
-
 	// Add white foam on the highest wave peaks
 	float foam_start = 0.80;
 	float foam_end = 0.90;
