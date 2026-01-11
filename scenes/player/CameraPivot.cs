@@ -66,9 +66,8 @@ public partial class CameraPivot : Marker3D
     }
   }
 
-  // Using _UnhandledInput instead of _Input so UI can consume input events first
-  // This prevents camera from zooming when scrolling over UI elements
-  public override void _UnhandledInput(InputEvent @event)
+  // Use _Input to ensure we always receive mouse events, even if UI is present
+  public override void _Input(InputEvent @event)
   {
     // If mouse is over the PortUI, don't handle camera controls
     if (_portUI != null && _portUI.Visible && _portUI.GetGlobalRect().HasPoint(_portUI.GetGlobalMousePosition()))
@@ -81,6 +80,7 @@ public partial class CameraPivot : Marker3D
       if (mouseButton.ButtonIndex == MouseButton.Left)
       {
         _isDragging = mouseButton.Pressed;
+        GD.Print($"[CameraPivot] Dragging: {_isDragging}");
       }
       // Handle scroll wheel for zooming (works for both mouse wheel and trackpad scroll)
       else if (mouseButton.Pressed)
@@ -133,6 +133,7 @@ public partial class CameraPivot : Marker3D
     // Only rotate the camera when dragging
     if (@event is InputEventMouseMotion mouseMotion && _isDragging)
     {
+      GD.Print($"[CameraPivot] MouseMotion: {mouseMotion.Relative}, Dragging: {_isDragging}");
       // Horizontal rotation (yaw) - rotate around Y axis
       _cameraTargetAngleY -= mouseMotion.Relative.X * MouseSensitivity;
 
