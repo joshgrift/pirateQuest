@@ -52,7 +52,7 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   private readonly Inventory _inventory = new();
   private int _fireCoolDownInSeconds = 2;
   private double _firedTimerCountdown = 0;
-  
+
   // Ship banking/tilt when turning
   private float _currentTurnInput = 0.0f;
 
@@ -221,7 +221,7 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
       // Rotate the ship - simple and responsive
       RotateY(-turnInput * Stats.GetStat(PlayerStat.ShipTurnSpeed) * (float)delta);
     }
-    
+
     // Store current turn input for banking effect (used in ApplyWaterPhysics)
     _currentTurnInput = turnInput;
 
