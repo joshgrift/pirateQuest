@@ -30,14 +30,14 @@ public partial class NetworkManager : Node
     GD.Print($"Server created on port {port}");
   }
 
-  public void CreateClient(string address, int port)
+  public Error CreateClient(string address, int port)
   {
     var peer = new ENetMultiplayerPeer();
     var error = peer.CreateClient(address, port);
     if (error != Error.Ok)
     {
       GD.PrintErr($"Failed to create client: {error}");
-      return;
+      return error;
     }
 
     // Disconnect existing signal connections before connecting
@@ -48,6 +48,7 @@ public partial class NetworkManager : Node
 
     Multiplayer.MultiplayerPeer = peer;
     GD.Print($"Client connecting to {address}:{port}");
+    return Error.Ok;
   }
 
   private void Disconnect()

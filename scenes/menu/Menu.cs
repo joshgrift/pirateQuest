@@ -7,6 +7,7 @@ public partial class Menu : Node2D
   [Export] public Container MultiplayerControls;
   [Export] public Container ServerListingsContainer;
   [Export] public Container PlayerIdentityContainer;
+  [Export] public Label StatusLabel;
 
   private PackedScene _listingScene = GD.Load<PackedScene>("res://scenes/menu/scenes/server_listing.tscn");
 
@@ -50,7 +51,7 @@ public partial class Menu : Node2D
       };
     }
 
-    // Custom join 
+    // Custom join
     var joinButton = MultiplayerControls.GetNodeOrNull<Button>("JoinButton");
     joinButton.ButtonDown += () =>
     {
@@ -69,9 +70,58 @@ public partial class Menu : Node2D
 
   private void JoinServer(string ipAddress, int port)
   {
+    DisplayStatus($"Joining server...");
     var networkManager = GetNode<NetworkManager>("/root/NetworkManager");
-    networkManager.CreateClient(ipAddress, port);
+
+    Multiplayer.ConnectedToServer += OnClientConnectedToServer;
+    Multiplayer.ConnectionFailed += OnClientConnectionFailed;
+    var error = networkManager.CreateClient(ipAddress, port);
+
+    if (error != Error.Ok)
+    {
+      Multiplayer.ConnectedToServer -= OnClientConnectedToServer;
+      Multiplayer.ConnectionFailed -= OnClientConnectionFailed;
+
+      DisplayError($"Failed to start connection: {error}");
+    }
+  }
+
+  private void OnClientConnectedToServer()
+  {
+    GD.Print("Client connected successfully, changing scene...");
+    Multiplayer.ConnectedToServer -= OnClientConnectedToServer;
+    Multiplayer.ConnectionFailed -= OnClientConnectionFailed;
     GetTree().ChangeSceneToFile("res://scenes/play/play.tscn");
+  }
+
+  private void OnClientConnectionFailed()
+  {
+    DisplayError("Failed to connect to sever");
+    Multiplayer.ConnectedToServer -= OnClientConnectedToServer;
+    Multiplayer.ConnectionFailed -= OnClientConnectionFailed;
+  }
+
+  private void DisplayError(string errorMessage)
+  {
+    StatusLabel.Text = errorMessage;
+    StatusLabel.AddThemeColorOverride("font_color", Colors.Red);
+    GD.PrintErr(errorMessage);
+
+    var timer = GetTree().CreateTimer(3.0);
+    timer.Timeout += () =>
+    {
+      if (StatusLabel != null)
+      {
+        StatusLabel.Text = "";
+      }
+    };
+  }
+
+  private void DisplayStatus(string statusMessage)
+  {
+    GD.Print(statusMessage);
+    StatusLabel.Text = statusMessage;
+    StatusLabel.AddThemeColorOverride("font_color", Colors.White);
   }
 
   private void StartServer()

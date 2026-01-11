@@ -200,7 +200,7 @@ transform = Transform3D(0.73805505, 0, 0.6747405, 0, 1, 0, -0.6747405, 0, 0.7380
 transform = Transform3D(0.8813447, 0, -0.47247386, 0, 1, 0, 0.47247386, 0, 0.8813447, 148.8082, 0, -79.26282)
 
 [node name="Island3" parent="Terrain" instance=ExtResource("17_blg3p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.128223, 0, 18.90105)
+transform = Transform3D(0.052806556, 0, -0.9986048, 0, 1, 0, 0.9986048, 0, 0.052806556, -50.793755, 0, 65.54738)
 
 [node name="Terrain" type="Node3D" parent="Terrain"]
 
@@ -465,7 +465,7 @@ transform = Transform3D(0.95987874, 0, 0.28041542, 0, 1, 0, -0.28041542, 0, 0.95
 [node name="Collision" type="StaticBody3D" parent="Terrain"]
 
 [node name="CollisionPolygon3D" type="CollisionPolygon3D" parent="Terrain/Collision"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 10, 0)
+transform = Transform3D(0.052806556, -0.9986048, 4.3650402e-08, 0, -4.371139e-08, -1, 0.9986048, 0.052806556, -2.3082478e-09, -32.92917, 10, 45.44775)
 depth = 20.0
 polygon = PackedVector2Array(3.169582, 4.927916, 2.989623, 8.346406, 0.3383503, 8.970942, -3.6262817, 10.67898, -5.969437, 14.953768, -9.357624, 15.071587, -12.033474, 17.491726, -11.565617, 19.907925, -8.49608, 20.279512, -4.2710686, 19.813778, 3.8654852, 24.117046, 9.492648, 24.588522, 13.672271, 29.073986, 18.446903, 31.844172, 22.616806, 33.159103, 25.60611, 30.940426, 25.482908, 25.00582, 32.68009, 22.88552, 37.219936, 19.79444, 39.321556, 15.059249, 39.8299, 11.932604, 38.76482, 9.88348, 38.63921, 6.651439, 36.64614, 4.789261, 37.37291, 3.172373, 38.126373, -0.5756331, 40.275173, -0.2728136, 41.25317, -2.023092, 40.772972, -6.2235026, 36.33821, -9.872204, 30.291094, -12.270219, 21.821177, -10.644281, 12.387869, -7.1756473, 7.740919, -0.77504206, 6.070809, 3.2613714, 4.4284782, 2.7013025)
 
@@ -505,7 +505,7 @@ ResourceType = 2
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 177.53204, 0.9999924, -81.66635)
 
 [node name="CollectionPoint3" parent="Interactables" instance=ExtResource("6_ccytq")]
-transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 43.47751, 1, 2.9968033)
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -35.510048, 1, 89.20008)
 
 [node name="CollectionPoint2" parent="Interactables" instance=ExtResource("6_ccytq")]
 transform = Transform3D(0.25, 0, 0, 0, 1, 0, 0, 0, 0.25, -69.97155, 1, -103.341606)
@@ -513,7 +513,7 @@ ResourceType = 3
 CollectionSpeed = 4.0
 
 [node name="Port" parent="Interactables" instance=ExtResource("9_4dfl3")]
-transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0.40486145, 1, 0.15786743)
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -33.59208, 1, 44.59691)
 PortName = "Saint Johns"
 ItemsForSale = Array[Object]([SubResource("Resource_a0nu5"), SubResource("Resource_bjecb"), SubResource("Resource_10igl"), SubResource("Resource_q6imw"), SubResource("Resource_qysfa"), SubResource("Resource_4dfl3")])
 

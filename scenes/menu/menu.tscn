@@ -4,11 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://d2v6jscs37wa2" path="res://art/banner.png" id="2_e0arn"]
 [ext_resource type="Theme" uid="uid://sj508xa6kulh" path="res://theme.tres" id="2_mcvr8"]
 
-[node name="Menu" type="Node2D" node_paths=PackedStringArray("MultiplayerControls", "ServerListingsContainer", "PlayerIdentityContainer")]
+[node name="Menu" type="Node2D" node_paths=PackedStringArray("MultiplayerControls", "ServerListingsContainer", "PlayerIdentityContainer", "StatusLabel")]
 script = ExtResource("1_lti8b")
 MultiplayerControls = NodePath("CanvasLayer/Menu/MarginContainer/VBoxContainer/MultiplayerControls")
 ServerListingsContainer = NodePath("CanvasLayer/Menu/MarginContainer/VBoxContainer/Servers")
 PlayerIdentityContainer = NodePath("CanvasLayer/Menu/MarginContainer/VBoxContainer/PlayerIdentity")
+StatusLabel = NodePath("CanvasLayer/Menu/MarginContainer/VBoxContainer/StatusLabel")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -100,6 +101,10 @@ expand_to_text_length = true
 [node name="JoinButton" type="Button" parent="CanvasLayer/Menu/MarginContainer/VBoxContainer/MultiplayerControls"]
 layout_mode = 2
 text = "Join"
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/Menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96423227, 0.21557301, 0.23434946, 1)
 
 [node name="VersionLabel" type="Label" parent="CanvasLayer"]
 anchors_preset = 7
