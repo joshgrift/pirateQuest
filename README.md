@@ -44,7 +44,19 @@ Please submit a PR, learning godot, so any and all suggestions welcome.
   - [ ] Close port menu early
   - [ ] Reset Port UI when you buy
   - [ ] Status Tool Tip
+  - [ ] Island collides with cannonballs
 - [ ] Make death less punishing somehow
+- [ ] A way to heal
+- [ ] Hit Markers
+- [ ] Limit Player characters
+- [ ] Respawn
+- [ ] Broadcast sound across all players
+- [ ] In Combat Timer
+  - [ ] Can't heal if you're in combat
+  - [ ] When in port, the timer pauses
+- [ ] Ship Upgrades??
+- [ ] Multiple Cannonball types?
+
 ### 0.4.0 Alpha
 - [ ] API for AI characters
 - [ ]
