@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://cmjyj2dnynkt1"]
+
+[ext_resource type="Script" uid="uid://dft7c6tuqfnfa" path="res://scenes/explosion/Explosion.cs" id="1_explosion"]
+[ext_resource type="AudioStream" path="res://art/sounds/jcsounds/Misc Sfx/sfx_cannon_fire_01.wav" id="2_audio"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_explosion"]
+emission_shape = 1
+emission_sphere_radius = 0.3
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 3.0
+initial_velocity_max = 8.0
+gravity = Vector3(0, -5, 0)
+scale_min = 0.2
+scale_max = 0.6
+color = Color(1, 0.7, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_particles"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 0.6, 0.2, 1)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_particles"]
+material = SubResource("StandardMaterial3D_particles")
+size = Vector2(0.5, 0.5)
+
+[node name="Explosion" type="Node3D"]
+script = ExtResource("1_explosion")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 24
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+visibility_aabb = AABB(-5, -5, -5, 10, 10, 10)
+process_material = SubResource("ParticleProcessMaterial_explosion")
+draw_pass_1 = SubResource("QuadMesh_particles")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_audio")
+volume_db = 10.0
+max_distance = 100.0
