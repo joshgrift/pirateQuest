@@ -8,6 +8,7 @@ public partial class Menu : Node2D
   [Export] public Container ServerListingsContainer;
   [Export] public Container PlayerIdentityContainer;
   [Export] public Label StatusLabel;
+  [Export] public Button MuteButton;
 
   private PackedScene _listingScene = GD.Load<PackedScene>("res://scenes/menu/scenes/server_listing.tscn");
 
@@ -66,6 +67,25 @@ public partial class Menu : Node2D
     {
       versionLabel.Text = Configuration.GetVersion();
     }
+
+    // Mute Button - toggles background sounds (ocean waves) on/off
+    // Other sounds like cannon fire still play - only ambient loops are affected
+    var muteButton = MuteButton;
+    var audioManager = GetNode<AudioManager>("/root/AudioManager");
+
+    // Set initial button state to match current mute status
+    // This ensures the button shows the correct state if we return to menu
+    muteButton.ButtonPressed = audioManager.IsBackgroundMuted();
+    muteButton.Text = audioManager.IsBackgroundMuted() ? "Unmute Sea" : "Mute Sea";
+
+    // Toggled signal fires when a toggle button changes state
+    // The 'toggled' parameter tells us if the button is now pressed (true) or not (false)
+    muteButton.Toggled += (toggled) =>
+    {
+      audioManager.SetBackgroundMuted(toggled);
+      // Update button text to show what will happen when clicked
+      muteButton.Text = toggled ? "Unmute Sea" : "Mute Sea";
+    };
   }
 
   private void JoinServer(string ipAddress, int port)

@@ -24,6 +24,10 @@ public partial class AudioManager : Node
   // Currently playing ambient/loop sounds (so we can stop them later)
   private Dictionary<string, AudioStreamPlayer> _activeLoops = new();
 
+  // When true, background loops (like ocean) won't play
+  // This is separate from the Master bus mute - other sounds still work!
+  private bool _backgroundMuted = false;
+
   public override void _Ready()
   {
     GD.Print("AudioManager ready");
@@ -92,6 +96,9 @@ public partial class AudioManager : Node
     // Don't play sounds on the server - it has no audio output
     if (IsServer()) return;
 
+    // Don't play background loops if they've been muted
+    if (_backgroundMuted) return;
+
     // Stop existing loop with same name if it's playing
     if (_activeLoops.ContainsKey(loopName))
     {
@@ -153,6 +160,42 @@ public partial class AudioManager : Node
       player.Stop();
       _activeLoops.Remove(loopName);
     }
+  }
+
+  /// <summary>
+  /// Mutes or unmutes background sounds (like ocean waves).
+  /// Other sounds like cannon fire and UI still play normally.
+  ///
+  /// When muted, this stops any currently playing loops and prevents
+  /// new loops from starting until unmuted.
+  /// </summary>
+  /// <param name="mute">True to mute background sounds, false to allow them</param>
+  public void SetBackgroundMuted(bool mute)
+  {
+    _backgroundMuted = mute;
+    GD.Print($"Background audio muted: {mute}");
+
+    if (mute)
+    {
+      // Stop all currently playing loops when muting
+      // We need to copy the keys because StopLoop modifies the dictionary
+      var loopNames = new List<string>(_activeLoops.Keys);
+      foreach (var loopName in loopNames)
+      {
+        StopLoop(loopName);
+      }
+    }
+    // Note: When unmuting, loops will start again when the code that
+    // originally called PlayLoop runs again (e.g., when entering Play scene)
+  }
+
+  /// <summary>
+  /// Checks if background sounds are currently muted.
+  /// </summary>
+  /// <returns>True if muted, false if not</returns>
+  public bool IsBackgroundMuted()
+  {
+    return _backgroundMuted;
   }
 
   /// <summary>

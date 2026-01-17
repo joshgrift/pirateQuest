@@ -149,6 +149,10 @@ public partial class Hud : Control
     var players = PlayersContainer.GetChildren().OfType<Player>()
       .OrderByDescending(p => p.GetInventoryCount(InventoryItemType.Trophy));
 
+    // Get the local player's nickname to compare against
+    // _player is the reference to our local player (the one we control)
+    string localPlayerNickname = _player?.Nickname;
+
     foreach (var leaderboardPlayer in players)
     {
       if (leaderboardPlayer.Nickname == "" || leaderboardPlayer.Nickname == null)
@@ -157,6 +161,18 @@ public partial class Hud : Control
       item.SetText(0, leaderboardPlayer.TrophyCount.ToString());
       item.SetIcon(0, Icons.GetInventoryIcon(InventoryItemType.Trophy));
       item.SetText(1, leaderboardPlayer.Nickname);
+
+      // Highlight the current player's row with a green tint
+      // TreeItem.SetCustomColor sets the text color for a specific column
+      // We check if this player is us by comparing nicknames
+      if (leaderboardPlayer.Nickname == localPlayerNickname)
+      {
+        // Color is created with RGB values from 0-1 (not 0-255)
+        // This is a nice green color: slightly muted so it's readable
+        Color greenTint = new Color(0.4f, 0.9f, 0.4f);
+        item.SetCustomColor(0, greenTint);  // Trophy count column
+        item.SetCustomColor(1, greenTint);  // Name column
+      }
     }
 
     GetTree().CreateTimer(5.0f).Timeout += UpdateLeaderboard;
