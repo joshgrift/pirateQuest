@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// AudioManager is an autoload singleton that manages all game sounds.
 /// Use this for global sounds like UI clicks, music, and ambient loops.
-/// 
+///
 /// For positional sounds (like cannon fire from a specific ship), use AudioStreamPlayer3D
 /// directly on the object instead.
 /// </summary>
@@ -37,6 +37,17 @@ public partial class AudioManager : Node
   }
 
   /// <summary>
+  /// Checks if we're running as a dedicated server (no audio output).
+  /// Servers don't have speakers, so we skip all audio playback.
+  /// </summary>
+  private bool IsServer()
+  {
+    // Multiplayer is a property on Node (which AudioManager inherits from)
+    // IsServer() returns true if we're hosting the game
+    return Multiplayer.IsServer();
+  }
+
+  /// <summary>
   /// Plays a one-shot sound effect (like UI clicks, pickups, etc.)
   /// This is for non-positional sounds that should be heard globally.
   /// </summary>
@@ -44,6 +55,9 @@ public partial class AudioManager : Node
   /// <param name="volumeDb">Volume in decibels (0 = normal, negative = quieter, positive = louder)</param>
   public void PlaySound(string soundPath, float volumeDb = 0.0f)
   {
+    // Don't play sounds on the server - it has no audio output
+    if (IsServer()) return;
+
     // Get or load the sound resource
     AudioStream stream = GetOrLoadSound(soundPath);
     if (stream == null)
@@ -68,13 +82,16 @@ public partial class AudioManager : Node
 
   /// <summary>
   /// Plays a looping sound (like ambient ocean, music, etc.)
-  /// Returns the player so you can stop it later with StopLoop()
+  /// The sound will automatically restart when it finishes.
   /// </summary>
   /// <param name="loopName">Unique name for this loop (so you can stop it later)</param>
   /// <param name="soundPath">Path to the sound file</param>
   /// <param name="volumeDb">Volume in decibels</param>
   public void PlayLoop(string loopName, string soundPath, float volumeDb = 0.0f)
   {
+    // Don't play sounds on the server - it has no audio output
+    if (IsServer()) return;
+
     // Stop existing loop with same name if it's playing
     if (_activeLoops.ContainsKey(loopName))
     {
@@ -97,11 +114,33 @@ public partial class AudioManager : Node
 
     player.Stream = stream;
     player.VolumeDb = volumeDb;
-    player.Autoplay = false; // We'll start it manually
+
+    // Connect to the Finished signal to restart when the sound ends
+    // This creates a true loop! We disconnect first in case it was already connected.
+    // The Callable stores a reference to the player so each loop restarts itself.
+    if (player.IsConnected(AudioStreamPlayer.SignalName.Finished, Callable.From(() => OnLoopFinished(player))))
+    {
+      player.Disconnect(AudioStreamPlayer.SignalName.Finished, Callable.From(() => OnLoopFinished(player)));
+    }
+    player.Finished += () => OnLoopFinished(player);
+
     player.Play(); // Start playing
 
     // Mark this as a loop (so it doesn't get reused)
     _activeLoops[loopName] = player;
+  }
+
+  /// <summary>
+  /// Called when a looping sound finishes - restarts it to create a seamless loop.
+  /// </summary>
+  private void OnLoopFinished(AudioStreamPlayer player)
+  {
+    // Only restart if this player is still in our active loops
+    // (If it was stopped via StopLoop, it won't be in the dictionary)
+    if (_activeLoops.ContainsValue(player))
+    {
+      player.Play();
+    }
   }
 
   /// <summary>

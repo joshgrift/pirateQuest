@@ -75,6 +75,10 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   // Ship banking/tilt when turning
   private float _currentTurnInput = 0.0f;
 
+  // Track whether we're currently playing the creaking sound
+  // This prevents us from starting the sound over and over every frame
+  private bool _isCreakingPlaying = false;
+
   public override void _Ready()
   {
     Health = MaxHealth;
@@ -243,7 +247,7 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
     // be set up correctly on non-local player instances.
     var tempAudio = new AudioStreamPlayer3D();
     tempAudio.Stream = GD.Load<AudioStream>("res://art/sounds/jcsounds/Misc Sfx/sfx_cannon_fire_01.wav");
-    tempAudio.VolumeDb = 10.0f;
+    tempAudio.VolumeDb = 20.0f;
     tempAudio.MaxDistance = 100.0f;
 
     // Add to scene tree first (required for GlobalPosition)
@@ -278,6 +282,10 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
     {
       turnInput = -1.0f;
     }
+
+    // Play creaking sound when the player is actively sailing (W or turning)
+    // This gives audio feedback that the ship is under strain
+    UpdateCreakingSound(forwardInput != 0.0f || turnInput != 0.0f);
 
     // Update speed based on forward input
     if (forwardInput != 0.0f)
@@ -680,5 +688,60 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 
     // Normalize from [-1, 1] to [0, 1] and scale by wave height
     return ((noiseVal + 1.0f) / 2.0f) * WaveHeight;
+  }
+
+  /// <summary>
+  /// Starts or stops the ship creaking sound based on whether we're moving.
+  ///
+  /// This uses the AudioManager singleton with a unique loop name that includes
+  /// our player name - this way each player has their own creaking sound that
+  /// doesn't interfere with others.
+  /// </summary>
+  /// <param name="isMoving">True if the player is pressing movement keys</param>
+  private void UpdateCreakingSound(bool isMoving)
+  {
+    // Only the local player should control their own creaking sound
+    if (!IsMultiplayerAuthority()) return;
+
+    var audioManager = GetNodeOrNull<AudioManager>("/root/AudioManager");
+    if (audioManager == null) return;
+
+    // Use a unique name for this player's creaking loop
+    // This ensures each player's creaking doesn't conflict with others
+    string loopName = $"creaking_{Name}";
+
+    if (isMoving && !_isCreakingPlaying)
+    {
+      // Start creaking - the ship strains when you sail!
+      audioManager.PlayLoop(
+        loopName,
+        "res://art/sounds/jcsounds/Ambiences (Loops)/amb_deck_creaks.wav",
+        -18.0f  // Quiet but audible
+      );
+      _isCreakingPlaying = true;
+    }
+    else if (!isMoving && _isCreakingPlaying)
+    {
+      // Stop creaking when we stop moving
+      audioManager.StopLoop(loopName);
+      _isCreakingPlaying = false;
+    }
+  }
+
+  /// <summary>
+  /// Clean up audio when the player is removed from the scene.
+  /// This prevents orphaned audio loops if the player disconnects.
+  /// </summary>
+  public override void _ExitTree()
+  {
+    // Stop our creaking sound if it's playing
+    if (_isCreakingPlaying)
+    {
+      var audioManager = GetNodeOrNull<AudioManager>("/root/AudioManager");
+      if (audioManager != null)
+      {
+        audioManager.StopLoop($"creaking_{Name}");
+      }
+    }
   }
 }

@@ -23,6 +23,11 @@ public partial class Play : Node3D
     _projectileSpawner.SpawnFunction = new Callable(this, MethodName.ProjectileSpawnHandler);
     _deadPlayerSpawner.SpawnFunction = new Callable(this, MethodName.DeadPlayerSpawnHandler);
 
+    // Start background ambient sounds
+    // We use the AudioManager autoload singleton to play looping sounds
+    // The "-10" volume (in decibels) makes these sounds quieter so they don't overpower gameplay
+    StartBackgroundAudio();
+
     if (Multiplayer.IsServer())
     {
       GD.Print($"Server ready");
@@ -128,5 +133,56 @@ public partial class Play : Node3D
   {
     _playerSpawner.Spawn(peerId);
     GD.Print($"Requested spawn for peer {peerId}");
+  }
+
+  /// <summary>
+  /// Starts the ambient background sounds for the Play scene.
+  /// Uses the AudioManager singleton to play looping audio.
+  ///
+  /// Key concepts:
+  /// - GetNode<T>("/root/Name") gets an autoload (singleton) node
+  /// - PlayLoop takes: a unique name (to stop it later), the sound path, and volume in dB
+  /// - Negative dB = quieter, 0 = normal, positive = louder
+  /// </summary>
+  private void StartBackgroundAudio()
+  {
+    // Get the AudioManager autoload singleton
+    // Autoloads are global nodes added in Project Settings > AutoLoad
+    // They're always available at /root/[Name]
+    var audioManager = GetNode<AudioManager>("/root/AudioManager");
+
+    // Play ocean waves - this is the main ambient sound
+    // Volume is set to -15 dB (quieter than normal) so it doesn't overpower other sounds
+    audioManager.PlayLoop(
+      "ocean",                               // Unique identifier - use this name to stop it later
+      "res://art/sounds/sea.wav",            // Path to the sound file
+      -15.0f                                 // Volume in decibels (negative = quieter)
+    );
+
+    // Note: Creaking sounds are handled by each Player when they move
+    // This makes more sense - the ship creaks when YOU sail, not constantly!
+
+    GD.Print("Background audio started: ocean waves");
+  }
+
+  /// <summary>
+  /// Called when this node is about to be removed from the scene tree.
+  /// We use this to clean up our audio loops.
+  ///
+  /// _ExitTree is the opposite of _Ready - good for cleanup!
+  /// </summary>
+  public override void _ExitTree()
+  {
+    // Stop our background audio when leaving this scene
+    // This prevents sounds from continuing to play after leaving
+    var audioManager = GetNodeOrNull<AudioManager>("/root/AudioManager");
+
+    // GetNodeOrNull returns null if the node doesn't exist (safer than GetNode)
+    // This can happen if the game is shutting down
+    if (audioManager != null)
+    {
+      audioManager.StopLoop("ocean");
+      GD.Print("Background audio stopped");
+    }
   }
 }
