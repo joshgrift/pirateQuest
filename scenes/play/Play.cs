@@ -113,13 +113,21 @@ public partial class Play : Node3D
 
   private void HandleDeath(Player player)
   {
+    // Hide the player while they wait to respawn
     player.Visible = false;
 
-    GetTree().CreateTimer(4.0f).Timeout += () =>
+    GD.Print($"{player.Name} died - respawning in 5 seconds...");
+
+    // After 5 seconds, respawn the player instead of returning to menu
+    GetTree().CreateTimer(5.0f).Timeout += () =>
     {
-      Multiplayer.MultiplayerPeer.Close();
-      GD.Print("Disconnected from multiplayer, returning to menu");
-      GetTree().ChangeSceneToFile("res://scenes/menu/menu.tscn");
+      // Make player visible again
+      player.Visible = true;
+
+      // Call the respawn method to reset health and position
+      player.Respawn();
+
+      GD.Print($"{player.Name} has respawned!");
     };
   }
 

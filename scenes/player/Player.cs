@@ -12,6 +12,16 @@ public class OwnedComponent
   public bool isEquipped;
 }
 
+/// <summary>
+/// Represents the current state of the player.
+/// Used to disable certain actions like moving, shooting, and taking damage when dead.
+/// </summary>
+public enum PlayerState
+{
+  Alive,
+  Dead
+}
+
 public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 {
   [Signal] public delegate void InventoryChangedEventHandler(InventoryItemType itemType, int newAmount, int change);
@@ -29,6 +39,9 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 
   public readonly PlayerStats Stats = new();
   public System.Collections.Generic.List<OwnedComponent> OwnedComponents = [];
+
+  // Current state of the player - controls whether they can move, shoot, or take damage
+  public PlayerState State { get; private set; } = PlayerState.Alive;
 
   public int FallAcceleration { get; set; } = 75;
   public int Health { get; set; } = 100;
@@ -183,6 +196,9 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   /// <param name="fromLeftSide">True to fire from the left cannon, false to fire from the right cannon</param>
   private void FireCannons(bool fromLeftSide)
   {
+    // Can't shoot while dead (waiting to respawn)
+    if (State == PlayerState.Dead) return;
+
     // Check if player has cannonballs in inventory
     if (_inventory.GetItemCount(InventoryItemType.CannonBall) <= 0)
     {
@@ -261,6 +277,9 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
 
   private void UpdateMovement(float delta)
   {
+    // Can't move while dead (waiting to respawn)
+    if (State == PlayerState.Dead) return;
+
     // Get input for forward/backward movement
     float forwardInput = 0.0f;
     if (Input.IsActionPressed("move_forward"))
@@ -378,6 +397,9 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   {
     if (!IsMultiplayerAuthority()) return;
 
+    // Can't take damage while dead (waiting to respawn)
+    if (State == PlayerState.Dead) return;
+
     Health -= amount;
     if (Health <= 0)
     {
@@ -393,13 +415,59 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   public void OnDeath()
   {
     GD.Print($"dead: {Name}");
+
+    // Set state to Dead - this disables movement, shooting, and taking damage
+    State = PlayerState.Dead;
+
+    // Calculate what items to drop:
+    // - ALL trophies are dropped
+    // - HALF of other items are dropped (rounded down)
+    // The player keeps the other half of items but loses ALL components
+    var itemsToDrop = new Dictionary<InventoryItemType, int>();
+    var currentInventory = _inventory.GetAll();
+
+    foreach (var item in currentInventory)
+    {
+      if (item.Key == InventoryItemType.Trophy)
+      {
+        // Drop ALL trophies
+        itemsToDrop[item.Key] = item.Value;
+      }
+      else
+      {
+        // Drop HALF of other items (rounded down)
+        int halfAmount = item.Value / 2;
+        if (halfAmount > 0)
+        {
+          itemsToDrop[item.Key] = halfAmount;
+        }
+      }
+    }
+
+    // Remove dropped items from inventory and notify the HUD
+    // For trophies: remove all
+    // For other items: remove half (what we dropped)
+    foreach (var item in itemsToDrop)
+    {
+      _inventory.UpdateItem(item.Key, -item.Value);
+      // Emit signal so HUD updates to show new amounts
+      EmitSignal(SignalName.InventoryChanged, (int)item.Key, _inventory.GetItemCount(item.Key), -item.Value);
+    }
+
+    // Clear ALL components - player loses all upgrades on death
+    OwnedComponents.Clear();
+    UpdatePlayerStats(); // Reset stats since no components are equipped
+
+    GD.Print($"{Name} dropped items on death: {itemsToDrop}");
+    GD.Print($"{Name} lost all components");
+
     RpcId(1, MethodName.ServerDeath, new Dictionary
     {
       ["peerId"] = Multiplayer.GetUniqueId(),
       ["nickname"] = Nickname,
       ["playerName"] = Name,
       ["position"] = GlobalPosition,
-      ["items"] = _inventory.GetAll()
+      ["items"] = itemsToDrop  // Only drop half items + all trophies
     });
 
     CallDeferred(MethodName.EmitSignal, SignalName.Death, Name);
@@ -410,6 +478,28 @@ public partial class Player : CharacterBody3D, ICanCollect, IDamageable
   {
     if (!Multiplayer.IsServer()) return;
     DeadPlayerSpawner.Spawn(spawnData);
+  }
+
+  /// <summary>
+  /// Respawns the player after death.
+  /// Resets health to max, moves to a random spawn location, and makes visible again.
+  /// Note: Components are already cleared in OnDeath, and half items are kept.
+  /// </summary>
+  public void Respawn()
+  {
+    if (!IsMultiplayerAuthority()) return;
+
+    // Set state back to Alive - this re-enables movement, shooting, and taking damage
+    State = PlayerState.Alive;
+
+    // Reset health to maximum
+    Health = MaxHealth;
+    EmitSignal(SignalName.HealthUpdate, Health);
+
+    // Move to a new random spawn position
+    RandomSpawn(100, 100);
+
+    GD.Print($"{Name} has respawned with {Health} health");
   }
 
   private void OnAutoHealTimeout()
